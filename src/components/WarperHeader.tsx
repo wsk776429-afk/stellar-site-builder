@@ -13,6 +13,7 @@ const WarperHeader = () => {
     { path: "/voice", label: "Voice" },
     { path: "/image", label: "Image" },
     { path: "/tools", label: "Tools" },
+    { path: "/dashboard", label: "Dashboard" },
   ];
 
   const isActive = (path: string) => location.pathname === path;

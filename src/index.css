@@ -165,4 +165,89 @@
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
+
+  /* 3D Card Effects */
+  .card-3d {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+  }
+
+  .card-3d:hover {
+    transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateZ(10px);
+    box-shadow: 
+      0 20px 40px -10px hsl(var(--primary) / 0.2),
+      0 10px 20px -5px hsl(var(--secondary) / 0.15);
+  }
+
+  .card-3d-subtle:hover {
+    transform: perspective(1000px) translateZ(5px) scale(1.01);
+    box-shadow: 0 10px 20px -5px hsl(var(--primary) / 0.15);
+  }
+
+  /* 3D Text Effect */
+  .text-3d {
+    text-shadow: 
+      0 1px 0 hsl(var(--primary) / 0.8),
+      0 2px 0 hsl(var(--primary) / 0.6),
+      0 3px 0 hsl(var(--primary) / 0.4),
+      0 4px 0 hsl(var(--primary) / 0.2),
+      0 5px 10px hsl(var(--background) / 0.5);
+  }
+
+  /* 3D Button Effect */
+  .btn-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-3d:hover {
+    transform: translateY(-3px) translateZ(10px);
+    box-shadow: 
+      0 10px 20px -5px hsl(var(--primary) / 0.4),
+      0 6px 10px -3px hsl(var(--secondary) / 0.3);
+  }
+
+  .btn-3d:active {
+    transform: translateY(0) translateZ(0);
+  }
+
+  /* Floating 3D Animation */
+  .animate-float-3d {
+    animation: float-3d 8s ease-in-out infinite;
+    transform-style: preserve-3d;
+  }
+
+  @keyframes float-3d {
+    0%, 100% { 
+      transform: perspective(1000px) translateY(0) rotateX(0) rotateY(0); 
+    }
+    25% { 
+      transform: perspective(1000px) translateY(-10px) rotateX(5deg) rotateY(-5deg); 
+    }
+    50% { 
+      transform: perspective(1000px) translateY(-5px) rotateX(-3deg) rotateY(5deg); 
+    }
+    75% { 
+      transform: perspective(1000px) translateY(-15px) rotateX(3deg) rotateY(-3deg); 
+    }
+  }
+
+  /* 3D Scene Container */
+  .scene-3d {
+    perspective: 1000px;
+    perspective-origin: center center;
+  }
+
+  /* Parallax 3D layers */
+  .parallax-layer-1 {
+    transform: translateZ(50px) scale(0.95);
+  }
+
+  .parallax-layer-2 {
+    transform: translateZ(100px) scale(0.9);
+  }
+
+  .parallax-layer-3 {
+    transform: translateZ(150px) scale(0.85);
+  }
 }
