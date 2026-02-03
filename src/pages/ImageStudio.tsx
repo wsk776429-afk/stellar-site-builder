@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Sparkles, Download, RefreshCw, Wand2, Maximize2, Lightbulb } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const qualityOptions = [
   { id: "hd", label: "HD", description: "1024×1024" },
@@ -34,30 +35,47 @@ const ImageStudio = () => {
   const [style, setStyle] = useState("default");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [generatedImages, setGeneratedImages] = useState<string[]>([
-    "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=512&h=512&fit=crop",
-    "https://images.unsplash.com/photo-1686191128892-3b37add4ad1d?w=512&h=512&fit=crop",
-    "https://images.unsplash.com/photo-1684779847639-fbcc5a57dfe9?w=512&h=512&fit=crop",
-    "https://images.unsplash.com/photo-1699116548123-95406d7cfbfe?w=512&h=512&fit=crop",
-  ]);
+  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const { toast } = useToast();
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!prompt.trim()) return;
     setIsGenerating(true);
     setGeneratedImage(null);
     
-    // Simulate generation
-    setTimeout(() => {
-      const newImage = `https://images.unsplash.com/photo-${1670000000000 + Math.floor(Math.random() * 50000000)}?w=1024&h=1024&fit=crop`;
-      setGeneratedImage(newImage);
-      setGeneratedImages(prev => [newImage, ...prev]);
-      setIsGenerating(false);
-      toast({
-        title: "Image Generated!",
-        description: "Your AI image has been created successfully.",
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-image', {
+        body: { prompt, style, quality }
       });
-    }, 2500);
+
+      if (error) {
+        throw new Error(error.message || 'Failed to generate image');
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      if (data.imageUrl) {
+        setGeneratedImage(data.imageUrl);
+        setGeneratedImages(prev => [data.imageUrl, ...prev]);
+        toast({
+          title: "Image Generated!",
+          description: data.description || "Your AI image has been created successfully.",
+        });
+      } else {
+        throw new Error('No image was returned');
+      }
+    } catch (error) {
+      console.error('Image generation error:', error);
+      toast({
+        title: "Generation Failed",
+        description: error instanceof Error ? error.message : "Failed to generate image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleDownload = (imageUrl: string) => {
