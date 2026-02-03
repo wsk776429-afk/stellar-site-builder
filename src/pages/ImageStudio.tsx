@@ -1,45 +1,81 @@
 import WarperHeader from "@/components/WarperHeader";
 import WarperFooter from "@/components/WarperFooter";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Sparkles, Download, RefreshCw, Wand2, Image, Maximize2 } from "lucide-react";
+import { Sparkles, Download, RefreshCw, Wand2, Maximize2, Lightbulb } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const qualityOptions = [
-  { id: "hd", label: "HD", description: "1024x1024" },
-  { id: "4k", label: "4K", description: "2048x2048" },
-  { id: "ultra", label: "Ultra", description: "4096x4096" },
+  { id: "hd", label: "HD", description: "1024×1024" },
+  { id: "4k", label: "4K", description: "2048×2048" },
+  { id: "ultra", label: "Ultra", description: "4096×4096" },
 ];
 
 const styleOptions = [
+  { id: "default", label: "Default" },
   { id: "realistic", label: "Photorealistic" },
-  { id: "artistic", label: "Artistic" },
-  { id: "anime", label: "Anime" },
+  { id: "digital", label: "Digital Art" },
+  { id: "oil", label: "Oil Painting" },
+  { id: "watercolor", label: "Watercolor" },
   { id: "3d", label: "3D Render" },
-  { id: "abstract", label: "Abstract" },
-  { id: "vintage", label: "Vintage" },
+];
+
+const examplePrompts = [
+  "A futuristic city with flying cars at night, neon lights",
+  "A cute robot playing with a puppy in a garden",
+  "An astronaut floating in space with Earth in the background",
+  "A magical forest with glowing mushrooms and fireflies",
+  "A vintage cafe on a rainy Paris street, impressionist style",
 ];
 
 const ImageStudio = () => {
   const [prompt, setPrompt] = useState("");
   const [quality, setQuality] = useState("hd");
-  const [style, setStyle] = useState("realistic");
+  const [style, setStyle] = useState("default");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [generatedImages, setGeneratedImages] = useState<string[]>([
     "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=512&h=512&fit=crop",
     "https://images.unsplash.com/photo-1686191128892-3b37add4ad1d?w=512&h=512&fit=crop",
     "https://images.unsplash.com/photo-1684779847639-fbcc5a57dfe9?w=512&h=512&fit=crop",
     "https://images.unsplash.com/photo-1699116548123-95406d7cfbfe?w=512&h=512&fit=crop",
   ]);
+  const { toast } = useToast();
 
   const handleGenerate = () => {
     if (!prompt.trim()) return;
     setIsGenerating(true);
+    setGeneratedImage(null);
     
     // Simulate generation
     setTimeout(() => {
+      const newImage = `https://images.unsplash.com/photo-${1670000000000 + Math.floor(Math.random() * 50000000)}?w=1024&h=1024&fit=crop`;
+      setGeneratedImage(newImage);
+      setGeneratedImages(prev => [newImage, ...prev]);
       setIsGenerating(false);
-    }, 2000);
+      toast({
+        title: "Image Generated!",
+        description: "Your AI image has been created successfully.",
+      });
+    }, 2500);
+  };
+
+  const handleDownload = (imageUrl: string) => {
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = `ai-image-${Date.now()}.jpg`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast({
+      title: "Download Started",
+      description: "Your image is being downloaded.",
+    });
+  };
+
+  const handleExampleClick = (example: string) => {
+    setPrompt(example);
   };
 
   return (
@@ -50,12 +86,14 @@ const ImageStudio = () => {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">
-              <span className="text-foreground">AI Image </span>
-              <span className="text-accent glow-text">Studio</span>
+            <h1 className="text-4xl font-bold mb-2 text-3d">
+              <span className="text-foreground">AI Photo </span>
+              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                Generator
+              </span>
             </h1>
-            <p className="text-muted-foreground">
-              Create stunning AI-generated images with various styles and qualities
+            <p className="text-muted-foreground text-lg">
+              Transform your words into stunning images
             </p>
           </div>
 
@@ -63,50 +101,29 @@ const ImageStudio = () => {
             {/* Controls */}
             <div className="lg:col-span-1 space-y-6">
               {/* Prompt Input */}
-              <div className="bg-card rounded-xl border border-border p-4">
-                <label className="text-sm font-medium mb-2 block">Describe your image</label>
+              <div className="bg-card rounded-xl border border-border p-5 card-3d">
+                <label className="text-sm font-semibold mb-3 block">
+                  Describe the image you want to create:
+                </label>
                 <textarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="A majestic dragon flying over a medieval castle at sunset..."
-                  className="w-full h-32 bg-muted rounded-lg p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full h-32 bg-muted rounded-lg p-4 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                 />
               </div>
 
-              {/* Quality Selection */}
-              <div className="bg-card rounded-xl border border-border p-4">
-                <label className="text-sm font-medium mb-3 block">Quality</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {qualityOptions.map((option) => (
-                    <button
-                      key={option.id}
-                      onClick={() => setQuality(option.id)}
-                      className={`p-3 rounded-lg text-center transition-all ${
-                        quality === option.id
-                          ? "bg-accent/20 border border-accent"
-                          : "bg-muted hover:bg-muted/80 border border-transparent"
-                      }`}
-                    >
-                      <p className={`text-sm font-medium ${quality === option.id ? "text-accent" : ""}`}>
-                        {option.label}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{option.description}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Style Selection */}
-              <div className="bg-card rounded-xl border border-border p-4">
-                <label className="text-sm font-medium mb-3 block">Style</label>
+              <div className="bg-card rounded-xl border border-border p-5 card-3d">
+                <label className="text-sm font-semibold mb-3 block">Choose a style (optional):</label>
                 <div className="grid grid-cols-2 gap-2">
                   {styleOptions.map((option) => (
                     <button
                       key={option.id}
                       onClick={() => setStyle(option.id)}
-                      className={`p-3 rounded-lg text-sm transition-all ${
+                      className={`p-3 rounded-lg text-sm font-medium transition-all btn-3d ${
                         style === option.id
-                          ? "bg-accent/20 border border-accent text-accent"
+                          ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground"
                           : "bg-muted hover:bg-muted/80 border border-transparent"
                       }`}
                     >
@@ -116,30 +133,107 @@ const ImageStudio = () => {
                 </div>
               </div>
 
+              {/* Quality Selection */}
+              <div className="bg-card rounded-xl border border-border p-5 card-3d">
+                <label className="text-sm font-semibold mb-3 block">Quality</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {qualityOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => setQuality(option.id)}
+                      className={`p-3 rounded-lg text-center transition-all btn-3d ${
+                        quality === option.id
+                          ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground"
+                          : "bg-muted hover:bg-muted/80 border border-transparent"
+                      }`}
+                    >
+                      <p className="text-sm font-semibold">{option.label}</p>
+                      <p className="text-xs opacity-80">{option.description}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Generate Button */}
               <Button
                 onClick={handleGenerate}
                 disabled={!prompt.trim() || isGenerating}
-                className="w-full gap-2 glow-box-accent"
+                className="w-full gap-2 glow-box btn-3d bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90"
                 size="lg"
               >
                 {isGenerating ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <RefreshCw className="w-5 h-5 animate-spin" />
                     Generating...
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-5 h-5" />
                     Generate Image
                   </>
                 )}
               </Button>
+
+              {/* Example Prompts */}
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-primary flex items-center gap-2 mb-3">
+                  <Lightbulb className="w-4 h-4" />
+                  Example Prompts
+                </h3>
+                <ul className="space-y-2">
+                  {examplePrompts.map((example, index) => (
+                    <li
+                      key={index}
+                      onClick={() => handleExampleClick(example)}
+                      className="text-sm text-muted-foreground hover:text-primary cursor-pointer transition-colors flex items-start gap-2"
+                    >
+                      <span className="text-primary">💡</span>
+                      <span className="hover:underline">{example}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
-            {/* Gallery */}
+            {/* Result Section */}
             <div className="lg:col-span-2">
-              <div className="bg-card rounded-xl border border-border p-4">
+              {/* Current Generation */}
+              {(isGenerating || generatedImage) && (
+                <div className="bg-card rounded-xl border border-border p-5 mb-6 card-3d">
+                  <h3 className="font-semibold mb-4">Generated Image</h3>
+                  <div className="rounded-xl overflow-hidden bg-muted aspect-square relative">
+                    {isGenerating ? (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <div className="w-16 h-16 border-4 border-muted-foreground/20 border-t-primary rounded-full animate-spin mb-4" />
+                        <p className="text-muted-foreground animate-pulse">
+                          Creating your image... This may take a moment
+                        </p>
+                      </div>
+                    ) : generatedImage ? (
+                      <>
+                        <img
+                          src={generatedImage}
+                          alt="Generated"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <Button
+                            onClick={() => handleDownload(generatedImage)}
+                            className="w-full gap-2 bg-primary hover:bg-primary/90"
+                            size="lg"
+                          >
+                            <Download className="w-5 h-5" />
+                            Download Image
+                          </Button>
+                        </div>
+                      </>
+                    ) : null}
+                  </div>
+                </div>
+              )}
+
+              {/* Gallery */}
+              <div className="bg-card rounded-xl border border-border p-5 card-3d">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold">Generated Images</h3>
                   <span className="text-sm text-muted-foreground">{generatedImages.length} images</span>
@@ -149,18 +243,23 @@ const ImageStudio = () => {
                   {generatedImages.map((img, index) => (
                     <div
                       key={index}
-                      className="relative group rounded-xl overflow-hidden aspect-square bg-muted"
+                      className="relative group rounded-xl overflow-hidden aspect-square bg-muted card-3d-subtle"
                     >
                       <img
                         src={img}
                         alt={`Generated ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                         <Button size="icon" variant="ghost" className="h-10 w-10">
                           <Maximize2 className="w-5 h-5" />
                         </Button>
-                        <Button size="icon" variant="ghost" className="h-10 w-10">
+                        <Button 
+                          size="icon" 
+                          variant="ghost" 
+                          className="h-10 w-10"
+                          onClick={() => handleDownload(img)}
+                        >
                           <Download className="w-5 h-5" />
                         </Button>
                         <Button size="icon" variant="ghost" className="h-10 w-10">

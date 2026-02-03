@@ -8,6 +8,7 @@ import Chat from "./pages/Chat";
 import Voice from "./pages/Voice";
 import ImageStudio from "./pages/ImageStudio";
 import Tools from "./pages/Tools";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/voice" element={<Voice />} />
           <Route path="/image" element={<ImageStudio />} />
           <Route path="/tools" element={<Tools />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
