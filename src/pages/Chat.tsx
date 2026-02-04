@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
+import { useNavigate } from "react-router-dom";
 import { 
   Send, 
   Bot, 
@@ -20,7 +23,10 @@ import {
   Utensils,
   Plane,
   Dumbbell,
-  Loader2
+  Loader2,
+  Plus,
+  MessageSquare,
+  Trash2
 } from "lucide-react";
 
 const agents = [
@@ -44,21 +50,27 @@ interface Message {
   content: string;
 }
 
+interface Conversation {
+  id: string;
+  agent_id: string;
+  title: string | null;
+  created_at: string;
+}
+
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 const Chat = () => {
   const [selectedAgent, setSelectedAgent] = useState(agents[0]);
-  const [messages, setMessages] = useState<Message[]>([
-    { 
-      id: "1", 
-      role: "assistant", 
-      content: "Hello! I'm your General AI assistant. How can I help you today?" 
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -68,9 +80,163 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Load conversations when user logs in
+  useEffect(() => {
+    if (user) {
+      loadConversations();
+    } else {
+      setConversations([]);
+      setCurrentConversationId(null);
+      setMessages([{
+        id: "welcome",
+        role: "assistant",
+        content: "Hello! I'm your General AI assistant. Sign in to save your chat history!"
+      }]);
+    }
+  }, [user]);
+
+  const loadConversations = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from("conversations")
+      .select("*")
+      .order("updated_at", { ascending: false });
+
+    if (error) {
+      console.error("Error loading conversations:", error);
+      return;
+    }
+
+    setConversations(data || []);
+  };
+
+  const loadMessages = async (conversationId: string) => {
+    const { data, error } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("conversation_id", conversationId)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.error("Error loading messages:", error);
+      return;
+    }
+
+    const conversation = conversations.find(c => c.id === conversationId);
+    if (conversation) {
+      const agent = agents.find(a => a.id === conversation.agent_id) || agents[0];
+      setSelectedAgent(agent);
+    }
+
+    setMessages(data?.map(m => ({
+      id: m.id,
+      role: m.role as "user" | "assistant",
+      content: m.content
+    })) || []);
+    setCurrentConversationId(conversationId);
+    setShowHistory(false);
+  };
+
+  const createNewConversation = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to save your conversations.",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("conversations")
+      .insert({
+        user_id: user.id,
+        agent_id: selectedAgent.id,
+        title: "New conversation"
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error creating conversation:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create conversation",
+        variant: "destructive",
+      });
+      return null;
+    }
+
+    setConversations(prev => [data, ...prev]);
+    setCurrentConversationId(data.id);
+    setMessages([]);
+    return data.id;
+  };
+
+  const deleteConversation = async (conversationId: string) => {
+    const { error } = await supabase
+      .from("conversations")
+      .delete()
+      .eq("id", conversationId);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete conversation",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setConversations(prev => prev.filter(c => c.id !== conversationId));
+    if (currentConversationId === conversationId) {
+      setCurrentConversationId(null);
+      setMessages([]);
+    }
+    toast({
+      title: "Deleted",
+      description: "Conversation deleted successfully",
+    });
+  };
+
+  const saveMessage = async (conversationId: string, role: "user" | "assistant", content: string) => {
+    if (!user) return;
+
+    await supabase
+      .from("messages")
+      .insert({
+        conversation_id: conversationId,
+        role,
+        content
+      });
+
+    // Update conversation title if it's the first user message
+    if (role === "user") {
+      const title = content.slice(0, 50) + (content.length > 50 ? "..." : "");
+      await supabase
+        .from("conversations")
+        .update({ title, updated_at: new Date().toISOString() })
+        .eq("id", conversationId);
+      
+      setConversations(prev => prev.map(c => 
+        c.id === conversationId ? { ...c, title } : c
+      ));
+    }
+  };
+
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
     
+    let convId = currentConversationId;
+    
+    // Create new conversation if needed
+    if (!convId && user) {
+      convId = await createNewConversation();
+      if (!convId) return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
@@ -81,11 +247,17 @@ const Chat = () => {
     setInput("");
     setIsLoading(true);
 
-    // Prepare messages for API (excluding initial greeting)
-    const apiMessages = [...messages.filter(m => m.id !== "1"), userMessage].map(m => ({
+    // Save user message
+    if (convId) {
+      await saveMessage(convId, "user", input);
+    }
+
+    // Prepare messages for API
+    const apiMessages = messages.map(m => ({
       role: m.role,
       content: m.content
     }));
+    apiMessages.push({ role: "user", content: input });
 
     let assistantContent = "";
 
@@ -115,7 +287,6 @@ const Chat = () => {
       const decoder = new TextDecoder();
       let textBuffer = "";
 
-      // Create initial assistant message
       const assistantId = (Date.now() + 1).toString();
       setMessages(prev => [...prev, { id: assistantId, role: "assistant", content: "" }]);
 
@@ -151,7 +322,6 @@ const Chat = () => {
               );
             }
           } catch {
-            // Incomplete JSON, put back and wait for more data
             textBuffer = line + "\n" + textBuffer;
             break;
           }
@@ -184,6 +354,11 @@ const Chat = () => {
         }
       }
 
+      // Save assistant message
+      if (convId && assistantContent) {
+        await saveMessage(convId, "assistant", assistantContent);
+      }
+
     } catch (error) {
       console.error('Chat error:', error);
       toast({
@@ -191,7 +366,6 @@ const Chat = () => {
         description: error instanceof Error ? error.message : "Failed to send message",
         variant: "destructive",
       });
-      // Remove failed message attempt
       setMessages(prev => prev.filter(m => m.role !== "assistant" || m.content !== ""));
     } finally {
       setIsLoading(false);
@@ -200,10 +374,20 @@ const Chat = () => {
 
   const handleAgentChange = (agent: typeof agents[0]) => {
     setSelectedAgent(agent);
+    setCurrentConversationId(null);
     setMessages([{
-      id: "1",
+      id: "welcome",
       role: "assistant",
       content: `Hello! I'm your ${agent.name}. I specialize in ${agent.description.toLowerCase()}. How can I assist you?`
+    }]);
+  };
+
+  const startNewChat = () => {
+    setCurrentConversationId(null);
+    setMessages([{
+      id: "welcome",
+      role: "assistant",
+      content: `Hello! I'm your ${selectedAgent.name}. How can I assist you?`
     }]);
   };
 
@@ -213,38 +397,110 @@ const Chat = () => {
 
       <main className="flex-1 container mx-auto px-4 py-6">
         <div className="max-w-6xl mx-auto h-[calc(100vh-200px)] flex gap-6">
-          {/* Agent Sidebar */}
-          <div className="hidden md:block w-72 bg-card rounded-xl border border-border p-4 overflow-y-auto">
-            <h3 className="font-semibold text-lg mb-4">AI Agents</h3>
-            <div className="space-y-2">
-              {agents.map((agent) => (
-                <button
-                  key={agent.id}
-                  onClick={() => handleAgentChange(agent)}
-                  disabled={isLoading}
-                  className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all disabled:opacity-50 ${
-                    selectedAgent.id === agent.id
-                      ? "bg-primary/10 border border-primary/30"
-                      : "hover:bg-muted border border-transparent"
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    selectedAgent.id === agent.id ? "bg-primary/20" : "bg-muted"
-                  }`}>
-                    <agent.icon className={`w-5 h-5 ${
-                      selectedAgent.id === agent.id ? "text-primary" : "text-muted-foreground"
-                    }`} />
-                  </div>
-                  <div className="text-left">
-                    <p className={`text-sm font-medium ${
-                      selectedAgent.id === agent.id ? "text-primary" : "text-foreground"
-                    }`}>
-                      {agent.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{agent.description}</p>
-                  </div>
-                </button>
-              ))}
+          {/* Sidebar */}
+          <div className="hidden md:flex flex-col w-72 bg-card rounded-xl border border-border overflow-hidden">
+            {/* Tabs */}
+            <div className="flex border-b border-border">
+              <button
+                onClick={() => setShowHistory(false)}
+                className={`flex-1 py-3 text-sm font-medium transition-colors ${
+                  !showHistory ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Agents
+              </button>
+              <button
+                onClick={() => setShowHistory(true)}
+                className={`flex-1 py-3 text-sm font-medium transition-colors ${
+                  showHistory ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                History
+              </button>
+            </div>
+
+            <div className="flex-1 p-4 overflow-y-auto">
+              {showHistory ? (
+                <div className="space-y-2">
+                  <Button
+                    onClick={startNewChat}
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    New Chat
+                  </Button>
+                  
+                  {!user ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Sign in to view history</p>
+                    </div>
+                  ) : conversations.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">No conversations yet</p>
+                    </div>
+                  ) : (
+                    conversations.map((conv) => (
+                      <div
+                        key={conv.id}
+                        className={`group flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-all ${
+                          currentConversationId === conv.id
+                            ? "bg-primary/10 border border-primary/30"
+                            : "hover:bg-muted border border-transparent"
+                        }`}
+                        onClick={() => loadMessages(conv.id)}
+                      >
+                        <MessageSquare className="w-4 h-4 shrink-0 text-muted-foreground" />
+                        <span className="flex-1 text-sm truncate">
+                          {conv.title || "New conversation"}
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteConversation(conv.id);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 p-1 hover:bg-destructive/20 rounded transition-all"
+                        >
+                          <Trash2 className="w-3 h-3 text-destructive" />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {agents.map((agent) => (
+                    <button
+                      key={agent.id}
+                      onClick={() => handleAgentChange(agent)}
+                      disabled={isLoading}
+                      className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all disabled:opacity-50 ${
+                        selectedAgent.id === agent.id
+                          ? "bg-primary/10 border border-primary/30"
+                          : "hover:bg-muted border border-transparent"
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        selectedAgent.id === agent.id ? "bg-primary/20" : "bg-muted"
+                      }`}>
+                        <agent.icon className={`w-5 h-5 ${
+                          selectedAgent.id === agent.id ? "text-primary" : "text-muted-foreground"
+                        }`} />
+                      </div>
+                      <div className="text-left">
+                        <p className={`text-sm font-medium ${
+                          selectedAgent.id === agent.id ? "text-primary" : "text-foreground"
+                        }`}>
+                          {agent.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{agent.description}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -255,14 +511,28 @@ const Chat = () => {
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                 <selectedAgent.icon className="w-5 h-5 text-primary" />
               </div>
-              <div>
+              <div className="flex-1">
                 <h3 className="font-semibold">{selectedAgent.name}</h3>
                 <p className="text-xs text-muted-foreground">{selectedAgent.description}</p>
               </div>
+              {user && (
+                <Button variant="ghost" size="sm" onClick={startNewChat}>
+                  <Plus className="w-4 h-4 mr-1" />
+                  New
+                </Button>
+              )}
             </div>
 
             {/* Messages */}
             <div className="flex-1 p-4 overflow-y-auto space-y-4">
+              {messages.length === 0 && (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  <div className="text-center">
+                    <Bot className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>Start a conversation with {selectedAgent.name}</p>
+                  </div>
+                </div>
+              )}
               {messages.map((message) => (
                 <div
                   key={message.id}
