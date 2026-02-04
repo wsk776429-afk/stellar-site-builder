@@ -2,7 +2,9 @@ import WarperHeader from "@/components/WarperHeader";
 import WarperFooter from "@/components/WarperFooter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import ReactMarkdown from "react-markdown";
 import { 
   Send, 
   Bot, 
@@ -17,7 +19,8 @@ import {
   Music,
   Utensils,
   Plane,
-  Dumbbell
+  Dumbbell,
+  Loader2
 } from "lucide-react";
 
 const agents = [
@@ -41,6 +44,8 @@ interface Message {
   content: string;
 }
 
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+
 const Chat = () => {
   const [selectedAgent, setSelectedAgent] = useState(agents[0]);
   const [messages, setMessages] = useState<Message[]>([
@@ -51,9 +56,20 @@ const Chat = () => {
     }
   ]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
     
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -63,16 +79,132 @@ const Chat = () => {
     
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: `Thanks for your message! As the ${selectedAgent.name}, I'm here to help with ${selectedAgent.description.toLowerCase()}. This is a demo response - connect to a real AI backend for actual responses.`
-      };
-      setMessages((prev) => [...prev, aiMessage]);
-    }, 1000);
+    // Prepare messages for API (excluding initial greeting)
+    const apiMessages = [...messages.filter(m => m.id !== "1"), userMessage].map(m => ({
+      role: m.role,
+      content: m.content
+    }));
+
+    let assistantContent = "";
+
+    try {
+      const response = await fetch(CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ 
+          messages: apiMessages,
+          agentId: selectedAgent.id 
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Request failed with status ${response.status}`);
+      }
+
+      if (!response.body) {
+        throw new Error('No response body');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+
+      // Create initial assistant message
+      const assistantId = (Date.now() + 1).toString();
+      setMessages(prev => [...prev, { id: assistantId, role: "assistant", content: "" }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              assistantContent += content;
+              setMessages(prev => 
+                prev.map(m => 
+                  m.id === assistantId 
+                    ? { ...m, content: assistantContent }
+                    : m
+                )
+              );
+            }
+          } catch {
+            // Incomplete JSON, put back and wait for more data
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Final flush
+      if (textBuffer.trim()) {
+        for (let raw of textBuffer.split("\n")) {
+          if (!raw) continue;
+          if (raw.endsWith("\r")) raw = raw.slice(0, -1);
+          if (raw.startsWith(":") || raw.trim() === "") continue;
+          if (!raw.startsWith("data: ")) continue;
+          const jsonStr = raw.slice(6).trim();
+          if (jsonStr === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              assistantContent += content;
+              setMessages(prev => 
+                prev.map(m => 
+                  m.id === assistantId 
+                    ? { ...m, content: assistantContent }
+                    : m
+                )
+              );
+            }
+          } catch { /* ignore */ }
+        }
+      }
+
+    } catch (error) {
+      console.error('Chat error:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to send message",
+        variant: "destructive",
+      });
+      // Remove failed message attempt
+      setMessages(prev => prev.filter(m => m.role !== "assistant" || m.content !== ""));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAgentChange = (agent: typeof agents[0]) => {
+    setSelectedAgent(agent);
+    setMessages([{
+      id: "1",
+      role: "assistant",
+      content: `Hello! I'm your ${agent.name}. I specialize in ${agent.description.toLowerCase()}. How can I assist you?`
+    }]);
   };
 
   return (
@@ -88,15 +220,9 @@ const Chat = () => {
               {agents.map((agent) => (
                 <button
                   key={agent.id}
-                  onClick={() => {
-                    setSelectedAgent(agent);
-                    setMessages([{
-                      id: "1",
-                      role: "assistant",
-                      content: `Hello! I'm your ${agent.name}. I specialize in ${agent.description.toLowerCase()}. How can I assist you?`
-                    }]);
-                  }}
-                  className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all ${
+                  onClick={() => handleAgentChange(agent)}
+                  disabled={isLoading}
+                  className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all disabled:opacity-50 ${
                     selectedAgent.id === agent.id
                       ? "bg-primary/10 border border-primary/30"
                       : "hover:bg-muted border border-transparent"
@@ -156,10 +282,17 @@ const Chat = () => {
                       ? "bg-secondary/10 text-foreground"
                       : "bg-muted text-foreground"
                   }`}>
-                    <p className="text-sm">{message.content}</p>
+                    {message.role === "assistant" ? (
+                      <div className="prose prose-sm dark:prose-invert max-w-none">
+                        <ReactMarkdown>{message.content || "..."}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-sm">{message.content}</p>
+                    )}
                   </div>
                 </div>
               ))}
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Input */}
@@ -169,11 +302,16 @@ const Chat = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Type your message..."
-                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+                  disabled={isLoading}
                   className="flex-1"
                 />
-                <Button onClick={handleSend} className="glow-box">
-                  <Send className="w-4 h-4" />
+                <Button onClick={handleSend} className="glow-box" disabled={isLoading}>
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
             </div>
