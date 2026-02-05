@@ -64,6 +64,18 @@ export default {
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))",
         },
+         // Neon accent colors for 3D effects
+         neon: {
+           cyan: "hsl(var(--neon-cyan))",
+           purple: "hsl(var(--neon-purple))",
+           pink: "hsl(var(--neon-pink))",
+           blue: "hsl(var(--neon-blue))",
+         },
+         pastel: {
+           lavender: "hsl(var(--pastel-lavender))",
+           mint: "hsl(var(--pastel-mint))",
+           peach: "hsl(var(--pastel-peach))",
+         },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -91,6 +103,32 @@ export default {
           from: { opacity: "0", transform: "translateX(20px)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
+         "float-3d": {
+           "0%, 100%": { 
+             transform: "translateY(0) rotateX(0) rotateY(0)",
+           },
+           "25%": { 
+             transform: "translateY(-10px) rotateX(2deg) rotateY(-2deg)",
+           },
+           "50%": { 
+             transform: "translateY(-5px) rotateX(-1deg) rotateY(1deg)",
+           },
+           "75%": { 
+             transform: "translateY(-8px) rotateX(1deg) rotateY(-1deg)",
+           },
+         },
+         "glow-pulse": {
+           "0%, 100%": {
+             boxShadow: "0 0 20px rgba(74, 222, 205, 0.3), 0 0 40px rgba(74, 222, 205, 0.1)",
+           },
+           "50%": {
+             boxShadow: "0 0 30px rgba(74, 222, 205, 0.5), 0 0 60px rgba(74, 222, 205, 0.2)",
+           },
+         },
+         "rotate-slow": {
+           from: { transform: "rotate(0deg)" },
+           to: { transform: "rotate(360deg)" },
+         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -98,6 +136,9 @@ export default {
         "fade-in": "fade-in 0.5s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out forwards",
         "slide-in-right": "slide-in-right 0.4s ease-out forwards",
+         "float-3d": "float-3d 8s ease-in-out infinite",
+         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+         "rotate-slow": "rotate-slow 20s linear infinite",
       },
     },
   },
