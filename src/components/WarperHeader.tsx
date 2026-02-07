@@ -100,35 +100,33 @@
              {loading ? (
                <div className="w-20 h-9 bg-muted/50 animate-pulse rounded-xl" />
              ) : user ? (
-               <DropdownMenu>
-                 <DropdownMenuTrigger asChild>
-                   <motion.button 
-                     whileHover={{ scale: 1.05 }}
-                     whileTap={{ scale: 0.98 }}
-                     className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card/50 border border-white/10 
-                                hover:border-primary/30 transition-colors"
-                   >
-                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/30 to-secondary/30 
-                                     flex items-center justify-center border border-primary/20">
-                       <User className="w-4 h-4 text-primary" />
-                     </div>
-                     <span className="max-w-[100px] truncate text-sm font-medium">
-                       {user.email?.split("@")[0]}
-                     </span>
-                   </motion.button>
-                 </DropdownMenuTrigger>
-                 <DropdownMenuContent align="end" className="w-48 backdrop-blur-xl bg-card/90 border-white/10">
-                   <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
-                     <User className="w-4 h-4 mr-2" />
-                     Dashboard
-                   </DropdownMenuItem>
-                   <DropdownMenuSeparator className="bg-white/10" />
-                   <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
-                     <LogOut className="w-4 h-4 mr-2" />
-                     Sign Out
-                   </DropdownMenuItem>
-                 </DropdownMenuContent>
-               </DropdownMenu>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button 
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card/50 border border-white/10 
+                                 hover:border-primary/30 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/30 to-secondary/30 
+                                      flex items-center justify-center border border-primary/20">
+                        <User className="w-4 h-4 text-primary" />
+                      </div>
+                      <span className="max-w-[100px] truncate text-sm font-medium">
+                        {user.email?.split("@")[0]}
+                      </span>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 backdrop-blur-xl bg-card/90 border-white/10">
+                    <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
+                      <User className="w-4 h-4 mr-2" />
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
              ) : (
                <div className="flex items-center gap-2">
                  <motion.button

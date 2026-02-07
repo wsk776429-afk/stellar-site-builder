@@ -48,21 +48,27 @@ serve(async (req) => {
 
     console.log('Generating image with prompt:', enhancedPrompt);
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    // Determine size based on quality
+    let size = '1024x1024';
+    if (quality === '4k') {
+      size = '1024x1024'; // DALL-E 3 max size
+    } else if (quality === 'ultra') {
+      size = '1024x1024';
+    }
+
+    // Use the dedicated images/generations endpoint
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/images/generations', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash-image',
-        messages: [
-          {
-            role: 'user',
-            content: `Generate a high-quality image: ${enhancedPrompt}`
-          }
-        ],
-        modalities: ['image', 'text']
+        model: 'dall-e-3',
+        prompt: enhancedPrompt,
+        n: 1,
+        size: size,
+        quality: quality === 'ultra' ? 'hd' : 'standard'
       }),
     });
 
@@ -86,11 +92,10 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('AI response received');
+    console.log('AI response received:', JSON.stringify(data).substring(0, 200));
 
-    // Extract the generated image from the response
-    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    const textContent = data.choices?.[0]?.message?.content;
+    // Extract the generated image URL from the response
+    const imageUrl = data.data?.[0]?.url;
 
     if (!imageUrl) {
       console.error('No image in response:', JSON.stringify(data));
@@ -100,7 +105,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         imageUrl,
-        description: textContent || 'Image generated successfully'
+        description: 'Image generated successfully'
       }),
       { 
         status: 200, 
