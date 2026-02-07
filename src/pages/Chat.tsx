@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Send, 
   Bot, 
@@ -392,13 +393,36 @@ const Chat = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
+      {/* 3D Background */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-60 -right-60 w-[500px] h-[500px] bg-gradient-to-br from-primary/15 via-secondary/10 to-transparent rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{ rotate: -360, scale: [1.1, 1, 1.1] }}
+          transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+          className="absolute -bottom-60 -left-60 w-[500px] h-[500px] bg-gradient-to-tr from-secondary/15 via-accent/10 to-transparent rounded-full blur-3xl"
+        />
+      </div>
+
       <WarperHeader />
 
-      <main className="flex-1 container mx-auto px-4 py-6">
-        <div className="max-w-6xl mx-auto h-[calc(100vh-200px)] flex gap-6">
+      <main className="flex-1 container mx-auto px-4 py-6 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-6xl mx-auto h-[calc(100vh-200px)] flex gap-6"
+        >
           {/* Sidebar */}
-          <div className="hidden md:flex flex-col w-72 bg-card rounded-xl border border-border overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="hidden md:flex flex-col w-72 glass-premium rounded-2xl overflow-hidden"
+          >
             {/* Tabs */}
             <div className="flex border-b border-border">
               <button
@@ -502,10 +526,15 @@ const Chat = () => {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
 
           {/* Chat Area */}
-          <div className="flex-1 flex flex-col bg-card rounded-xl border border-border">
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex-1 flex flex-col glass-premium rounded-2xl overflow-hidden"
+          >
             {/* Chat Header */}
             <div className="p-4 border-b border-border flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -585,8 +614,8 @@ const Chat = () => {
                 </Button>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </main>
 
       <WarperFooter />
