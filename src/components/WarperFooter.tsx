@@ -131,12 +131,14 @@
            transition={{ delay: 0.5 }}
            className="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4"
          >
-           <p className="text-sm text-muted-foreground">
-             © 2024 Warper AI. All rights reserved.
-           </p>
-           <p className="text-sm text-muted-foreground flex items-center gap-2">
-             Made with <Heart className="w-3 h-3 text-accent animate-pulse" /> using advanced AI
-           </p>
+          <p className="text-sm text-muted-foreground">
+            © 2024 Warper AI. All rights reserved.
+          </p>
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            Founded by <span className="font-semibold bg-gradient-to-r from-primary via-cyan-400 to-secondary bg-clip-text text-transparent">Shaik Waheed Babu</span>
+            <span className="mx-1">•</span>
+            Made with <Heart className="w-3 h-3 text-accent animate-pulse" /> using advanced AI
+          </p>
          </motion.div>
        </div>
      </footer>

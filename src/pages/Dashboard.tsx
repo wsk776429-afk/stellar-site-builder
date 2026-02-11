@@ -18,6 +18,8 @@ import {
   FileText
 } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
+import GlassCard from "@/components/GlassCard";
 
 const mockSavedImages = [
   { id: 1, url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=256&h=256&fit=crop", prompt: "Futuristic city at night", date: "2024-01-15" },
@@ -46,6 +48,13 @@ const usageStats = {
   totalCredits: 1000,
 };
 
+const statCards = [
+  { label: "Images", value: usageStats.imagesGenerated, icon: Image, gradient: "from-primary/30 to-cyan-400/20", textColor: "text-primary" },
+  { label: "Messages", value: usageStats.chatMessages, icon: MessageSquare, gradient: "from-secondary/30 to-purple-400/20", textColor: "text-secondary" },
+  { label: "Voice", value: `${usageStats.voiceMinutes}m`, icon: Mic, gradient: "from-accent/30 to-pink-400/20", textColor: "text-accent" },
+  { label: "Tools", value: usageStats.toolsUsed, icon: Zap, gradient: "from-pink-400/30 to-rose-400/20", textColor: "text-pink-400" },
+];
+
 const Dashboard = () => {
   const [savedImages, setSavedImages] = useState(mockSavedImages);
   const [conversations, setConversations] = useState(mockConversations);
@@ -69,160 +78,150 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
+      {/* 3D Animated Background */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={{ rotate: 360, scale: [1, 1.15, 1] }}
+          transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-60 -right-60 w-[500px] h-[500px] bg-gradient-to-br from-primary/15 via-secondary/10 to-transparent rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{ rotate: -360, scale: [1.15, 1, 1.15] }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="absolute -bottom-60 -left-60 w-[500px] h-[500px] bg-gradient-to-tr from-accent/15 via-pink-400/10 to-transparent rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{ y: [0, -40, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-gradient-radial from-secondary/5 to-transparent rounded-full blur-3xl"
+        />
+      </div>
+
       <WarperHeader />
 
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 via-secondary/10 to-accent/20 border border-primary/30 mb-4"
+            >
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">Analytics & Content</span>
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-2">
               <span className="text-foreground">Your </span>
-              <span className="text-primary glow-text">Dashboard</span>
+              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">Dashboard</span>
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-lg">
               Track your usage, saved content, and conversation history
             </p>
-          </div>
+          </motion.div>
 
           {/* Stats Overview */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <Card className="card-3d group">
-              <CardContent className="p-4">
+            {statCards.map((stat, index) => (
+              <GlassCard
+                key={stat.label}
+                glowColor={index === 0 ? "primary" : index === 1 ? "secondary" : index === 2 ? "accent" : "pink"}
+                delay={index * 0.1}
+                className="p-5"
+              >
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Image className="w-6 h-6 text-primary" />
-                  </div>
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center`}
+                  >
+                    <stat.icon className={`w-6 h-6 ${stat.textColor} drop-shadow-lg`} />
+                  </motion.div>
                   <div>
-                    <p className="text-2xl font-bold">{usageStats.imagesGenerated}</p>
-                    <p className="text-sm text-muted-foreground">Images</p>
+                    <p className={`text-2xl font-bold ${stat.textColor}`}>{stat.value}</p>
+                    <p className="text-sm text-muted-foreground">{stat.label}</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-3d group">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <MessageSquare className="w-6 h-6 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">{usageStats.chatMessages}</p>
-                    <p className="text-sm text-muted-foreground">Messages</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-3d group">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Mic className="w-6 h-6 text-accent" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">{usageStats.voiceMinutes}m</p>
-                    <p className="text-sm text-muted-foreground">Voice</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="card-3d group">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-chart-3/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Zap className="w-6 h-6 text-chart-3" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">{usageStats.toolsUsed}</p>
-                    <p className="text-sm text-muted-foreground">Tools</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              </GlassCard>
+            ))}
           </div>
 
           {/* Credits & Storage */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <Card className="card-3d">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  Credits Usage
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Used: {usageStats.totalCredits - usageStats.creditsRemaining}</span>
-                    <span className="text-primary font-medium">{usageStats.creditsRemaining} remaining</span>
-                  </div>
-                  <Progress value={(usageStats.creditsRemaining / usageStats.totalCredits) * 100} className="h-3" />
-                  <Button className="w-full glow-box" size="sm">
-                    <TrendingUp className="w-4 h-4 mr-2" />
-                    Upgrade Plan
-                  </Button>
+            <GlassCard glowColor="primary" className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-5 h-5 text-primary" />
+                <h3 className="text-lg font-semibold">Credits Usage</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Used: {usageStats.totalCredits - usageStats.creditsRemaining}</span>
+                  <span className="text-primary font-medium">{usageStats.creditsRemaining} remaining</span>
                 </div>
-              </CardContent>
-            </Card>
+                <Progress value={(usageStats.creditsRemaining / usageStats.totalCredits) * 100} className="h-3" />
+                <Button className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-lg shadow-primary/30" size="sm">
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Upgrade Plan
+                </Button>
+              </div>
+            </GlassCard>
 
-            <Card className="card-3d">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-secondary" />
-                  Storage Usage
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Used: {usageStats.storageUsed}%</span>
-                    <span className="text-secondary font-medium">{100 - usageStats.storageUsed}% available</span>
-                  </div>
-                  <Progress value={usageStats.storageUsed} className="h-3" />
-                  <div className="flex gap-2">
-                    <div className="flex-1 text-center p-2 bg-muted rounded-lg">
-                      <p className="text-lg font-bold">{savedImages.length}</p>
-                      <p className="text-xs text-muted-foreground">Images</p>
-                    </div>
-                    <div className="flex-1 text-center p-2 bg-muted rounded-lg">
-                      <p className="text-lg font-bold">{conversations.length}</p>
-                      <p className="text-xs text-muted-foreground">Chats</p>
-                    </div>
-                    <div className="flex-1 text-center p-2 bg-muted rounded-lg">
-                      <p className="text-lg font-bold">3</p>
-                      <p className="text-xs text-muted-foreground">Files</p>
-                    </div>
-                  </div>
+            <GlassCard glowColor="secondary" className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="w-5 h-5 text-secondary" />
+                <h3 className="text-lg font-semibold">Storage Usage</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Used: {usageStats.storageUsed}%</span>
+                  <span className="text-secondary font-medium">{100 - usageStats.storageUsed}% available</span>
                 </div>
-              </CardContent>
-            </Card>
+                <Progress value={usageStats.storageUsed} className="h-3" />
+                <div className="flex gap-2">
+                  {[
+                    { label: "Images", value: savedImages.length },
+                    { label: "Chats", value: conversations.length },
+                    { label: "Files", value: 3 },
+                  ].map((item) => (
+                    <div key={item.label} className="flex-1 text-center p-2 bg-gradient-to-br from-card/60 to-card/40 rounded-xl border border-white/10">
+                      <p className="text-lg font-bold">{item.value}</p>
+                      <p className="text-xs text-muted-foreground">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </GlassCard>
           </div>
 
           {/* Tabs for Content */}
-          <Tabs defaultValue="images" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="images" className="gap-2">
-                <Image className="w-4 h-4" />
-                Saved Images
-              </TabsTrigger>
-              <TabsTrigger value="conversations" className="gap-2">
-                <MessageSquare className="w-4 h-4" />
-                Conversations
-              </TabsTrigger>
-            </TabsList>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Tabs defaultValue="images" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-card/50 backdrop-blur-xl border border-white/10">
+                <TabsTrigger value="images" className="gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/10">
+                  <Image className="w-4 h-4" />
+                  Saved Images
+                </TabsTrigger>
+                <TabsTrigger value="conversations" className="gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary/20 data-[state=active]:to-accent/10">
+                  <MessageSquare className="w-4 h-4" />
+                  Conversations
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="images">
-              <Card className="card-3d">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Your Saved Images</span>
-                    <span className="text-sm font-normal text-muted-foreground">{savedImages.length} images</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+              <TabsContent value="images">
+                <GlassCard glowColor="primary" hover3D={false} className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="font-semibold text-lg">Your Saved Images</h3>
+                    <span className="text-sm text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">{savedImages.length} images</span>
+                  </div>
                   {savedImages.length === 0 ? (
                     <div className="text-center py-12 text-muted-foreground">
                       <Image className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -231,12 +230,19 @@ const Dashboard = () => {
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {savedImages.map((image) => (
-                        <div key={image.id} className="group relative rounded-xl overflow-hidden aspect-square bg-muted card-3d">
+                      {savedImages.map((image, index) => (
+                        <motion.div
+                          key={image.id}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: index * 0.05 }}
+                          whileHover={{ scale: 1.03, y: -5 }}
+                          className="group relative rounded-2xl overflow-hidden aspect-square bg-muted border border-white/10"
+                        >
                           <img
                             src={image.url}
                             alt={image.prompt}
-                            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                            className="w-full h-full object-cover transition-transform group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                             <div className="absolute bottom-0 left-0 right-0 p-3">
@@ -250,7 +256,7 @@ const Dashboard = () => {
                                   <Button 
                                     size="icon" 
                                     variant="ghost" 
-                                    className="h-7 w-7"
+                                    className="h-7 w-7 hover:bg-primary/20"
                                     onClick={() => handleDownloadImage(image.url, image.prompt)}
                                   >
                                     <Download className="w-3.5 h-3.5" />
@@ -258,7 +264,7 @@ const Dashboard = () => {
                                   <Button 
                                     size="icon" 
                                     variant="ghost" 
-                                    className="h-7 w-7 text-destructive hover:text-destructive"
+                                    className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/20"
                                     onClick={() => handleDeleteImage(image.id)}
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -267,23 +273,19 @@ const Dashboard = () => {
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </GlassCard>
+              </TabsContent>
 
-            <TabsContent value="conversations">
-              <Card className="card-3d">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Conversation History</span>
-                    <span className="text-sm font-normal text-muted-foreground">{conversations.length} conversations</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+              <TabsContent value="conversations">
+                <GlassCard glowColor="secondary" hover3D={false} className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="font-semibold text-lg">Conversation History</h3>
+                    <span className="text-sm text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">{conversations.length} conversations</span>
+                  </div>
                   {conversations.length === 0 ? (
                     <div className="text-center py-12 text-muted-foreground">
                       <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -292,18 +294,25 @@ const Dashboard = () => {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {conversations.map((conv) => (
-                        <div 
-                          key={conv.id} 
-                          className="group flex items-center gap-4 p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors cursor-pointer card-3d-subtle"
+                      {conversations.map((conv, index) => (
+                        <motion.div
+                          key={conv.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          whileHover={{ x: 5, scale: 1.01 }}
+                          className="group flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-card/60 to-card/40 border border-white/10 hover:border-secondary/30 hover:shadow-lg hover:shadow-secondary/10 transition-all cursor-pointer"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
-                            <FileText className="w-6 h-6 text-primary-foreground" />
-                          </div>
+                          <motion.div
+                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary/30 to-accent/20 flex items-center justify-center flex-shrink-0"
+                          >
+                            <FileText className="w-6 h-6 text-secondary" />
+                          </motion.div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <h4 className="font-medium text-sm">{conv.agent}</h4>
-                              <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                              <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
                                 {conv.messages} messages
                               </span>
                             </div>
@@ -314,7 +323,7 @@ const Dashboard = () => {
                             <Button 
                               size="icon" 
                               variant="ghost" 
-                              className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
+                              className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/20"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleDeleteConversation(conv.id);
@@ -323,14 +332,14 @@ const Dashboard = () => {
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                </GlassCard>
+              </TabsContent>
+            </Tabs>
+          </motion.div>
         </div>
       </main>
 
