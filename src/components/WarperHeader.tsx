@@ -18,14 +18,15 @@
    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
    const { user, signOut, loading } = useAuth();
  
-   const navLinks = [
-     { path: "/", label: "Home" },
-     { path: "/chat", label: "Chat" },
-     { path: "/voice", label: "Voice" },
-     { path: "/image", label: "Image" },
-     { path: "/tools", label: "Tools" },
-     { path: "/dashboard", label: "Dashboard" },
-   ];
+  const navLinks = [
+    { path: "/", label: "Home" },
+    { path: "/chat", label: "Chat" },
+    { path: "/voice", label: "Voice" },
+    { path: "/image", label: "Studio" },
+    { path: "/photo-tools", label: "Photo" },
+    { path: "/pdf-tools", label: "PDF" },
+    { path: "/dashboard", label: "Dashboard" },
+  ];
  
    const isActive = (path: string) => location.pathname === path;
  
