@@ -11,6 +11,8 @@ import Chat from "./pages/Chat";
 import Voice from "./pages/Voice";
 import ImageStudio from "./pages/ImageStudio";
 import Tools from "./pages/Tools";
+import PhotoTools from "./pages/PhotoTools";
+import PdfTools from "./pages/PdfTools";
 import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -29,6 +31,8 @@ const AnimatedRoutes = () => {
         <Route path="/voice" element={<PageTransition><Voice /></PageTransition>} />
         <Route path="/image" element={<PageTransition><ImageStudio /></PageTransition>} />
         <Route path="/tools" element={<PageTransition><Tools /></PageTransition>} />
+        <Route path="/photo-tools" element={<PageTransition><PhotoTools /></PageTransition>} />
+        <Route path="/pdf-tools" element={<PageTransition><PdfTools /></PageTransition>} />
         <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
