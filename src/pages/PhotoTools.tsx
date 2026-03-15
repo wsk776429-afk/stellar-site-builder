@@ -25,6 +25,7 @@ const PhotoTools = () => {
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState("");
   const { toast } = useToast();
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
