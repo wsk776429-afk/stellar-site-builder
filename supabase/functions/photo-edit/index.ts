@@ -26,14 +26,26 @@ serve(async (req) => {
     }
 
     const toolPrompts: Record<string, string> = {
-      enhance: 'Enhance this image: improve clarity, sharpness, color balance, and overall quality. Make it look professional.',
-      upscale: 'Upscale and enhance this image to higher quality. Improve details and sharpness.',
-      colorize: 'Colorize this black and white image with realistic and natural colors.',
-      restore: 'Restore this old or damaged photo. Fix scratches, tears, fading, and improve quality.',
-      'remove-bg': 'Remove the background from this image, making it transparent or white. Keep only the main subject.',
+      enhance: 'Please enhance this image. Improve the clarity, sharpness, color vibrancy, contrast, and overall quality to make it look professional and polished. Output the enhanced image.',
+      upscale: 'Please upscale this image to higher quality. Sharpen details, reduce noise, and improve overall resolution quality. Output the improved image.',
+      colorize: 'Please colorize this black and white / grayscale image with realistic, natural colors. Maintain the original composition and details. Output the colorized image.',
+      restore: 'Please restore this old or damaged photo. Fix any scratches, tears, fading, noise, or artifacts. Improve the overall quality while preserving the original look. Output the restored image.',
+      'remove-bg': 'Please remove the background from this image. Keep only the main subject and make the background pure white. Output the image with background removed.',
+      'auto-edit': 'Analyze this photo carefully. Identify any issues like poor lighting, color imbalance, noise, blur, low contrast, overexposure, underexposure, or any other quality problems. Then automatically fix ALL detected issues to produce the best possible version of this photo. Apply professional-grade corrections. Output the improved image.',
+      'custom': instruction || 'Please enhance this image quality. Output the improved image.',
     };
 
-    const prompt = instruction || toolPrompts[tool] || 'Enhance this image quality';
+    const prompt = tool === 'custom' && instruction 
+      ? `Please edit this image according to these instructions: ${instruction}. Output the edited image.`
+      : toolPrompts[tool] || toolPrompts['auto-edit'];
+
+    console.log('Processing with tool:', tool, 'prompt length:', prompt.length);
+
+    // Ensure the image URL is properly formatted for the API
+    let imageUrl = imageBase64;
+    if (!imageUrl.startsWith('data:')) {
+      imageUrl = `data:image/png;base64,${imageUrl}`;
+    }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -50,42 +62,103 @@ serve(async (req) => {
               { type: 'text', text: prompt },
               {
                 type: 'image_url',
-                image_url: { url: imageBase64 }
+                image_url: { url: imageUrl }
               }
             ]
           }
         ],
-        modalities: ['image', 'text']
+        modalities: ['text', 'image']
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('AI gateway error:', response.status, errorText);
-      throw new Error(`AI processing failed: ${response.status}`);
+      
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: 'Rate limit exceeded. Please wait a moment and try again.' }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: 'Usage limit reached. Please add credits to continue.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      throw new Error(`AI processing failed: ${response.status} - ${errorText.substring(0, 200)}`);
     }
 
     const data = await response.json();
-    console.log('AI response structure:', JSON.stringify(data.choices?.[0]?.message, null, 2).substring(0, 500));
+    console.log('Response keys:', Object.keys(data));
+    console.log('Message keys:', data.choices?.[0]?.message ? Object.keys(data.choices[0].message) : 'no message');
     
-    // Try multiple response formats
-    let editedImage = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    if (!editedImage) {
-      // Check inline_data format
-      const parts = data.choices?.[0]?.message?.content;
-      if (Array.isArray(parts)) {
-        const imagePart = parts.find((p: any) => p.type === 'image_url' || p.inline_data);
-        if (imagePart?.image_url?.url) editedImage = imagePart.image_url.url;
-        else if (imagePart?.inline_data) editedImage = `data:${imagePart.inline_data.mime_type};base64,${imagePart.inline_data.data}`;
+    // Log the full message structure to understand the format
+    const msg = data.choices?.[0]?.message;
+    if (msg) {
+      console.log('Message content type:', typeof msg.content);
+      if (Array.isArray(msg.content)) {
+        console.log('Content parts:', msg.content.map((p: any) => ({ type: p.type, hasUrl: !!p.image_url?.url, hasInlineData: !!p.inline_data })));
+      }
+      if (msg.images) {
+        console.log('Images array length:', msg.images.length);
+      }
+    }
+
+    // Try multiple response formats to find the edited image
+    let editedImage: string | null = null;
+    let description = '';
+
+    if (msg) {
+      // Format 1: images array (OpenAI-style)
+      if (msg.images && Array.isArray(msg.images) && msg.images.length > 0) {
+        const img = msg.images[0];
+        if (img.image_url?.url) editedImage = img.image_url.url;
+        else if (img.url) editedImage = img.url;
+        else if (typeof img === 'string') editedImage = img;
+      }
+
+      // Format 2: content as array of parts (Gemini-style)
+      if (!editedImage && Array.isArray(msg.content)) {
+        for (const part of msg.content) {
+          if (part.type === 'image_url' && part.image_url?.url) {
+            editedImage = part.image_url.url;
+          } else if (part.type === 'image' && part.image_url?.url) {
+            editedImage = part.image_url.url;
+          } else if (part.inline_data) {
+            editedImage = `data:${part.inline_data.mime_type || 'image/png'};base64,${part.inline_data.data}`;
+          } else if (part.type === 'text' && part.text) {
+            description += part.text;
+          }
+        }
+      }
+
+      // Format 3: content is a string (text only response - try to extract base64)
+      if (!editedImage && typeof msg.content === 'string') {
+        description = msg.content;
+        // Check if content itself contains base64 image data
+        const b64Match = msg.content.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
+        if (b64Match) {
+          editedImage = b64Match[0];
+        }
       }
     }
 
     if (!editedImage) {
-      throw new Error('No edited image was returned');
+      console.error('No image found in response. Full message:', JSON.stringify(msg).substring(0, 1000));
+      return new Response(
+        JSON.stringify({ 
+          error: 'The AI could not generate an edited image. Try a different tool or a clearer image.',
+          description: description || 'No image was returned'
+        }),
+        { status: 422, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     return new Response(
-      JSON.stringify({ imageUrl: editedImage, description: data.choices?.[0]?.message?.content || 'Image processed' }),
+      JSON.stringify({ imageUrl: editedImage, description: description || 'Image processed successfully' }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
