@@ -16,6 +16,7 @@ const photoTools = [
   { id: "colorize", icon: Palette, label: "Colorize", description: "Add color to B&W" },
   { id: "restore", icon: Wand2, label: "Restore", description: "Fix old photos" },
   { id: "remove-bg", icon: Eraser, label: "Remove BG", description: "Remove background" },
+  { id: "custom", icon: PenTool, label: "Custom Edit", description: "Edit with prompt" },
 ];
 
 const PhotoTools = () => {
