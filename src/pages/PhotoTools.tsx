@@ -52,8 +52,12 @@ const PhotoTools = () => {
     setIsProcessing(true);
     setProcessedImage(null);
     try {
+      const body: any = { imageBase64: uploadedPreview, tool: toolId };
+      if (toolId === 'custom' && customPrompt.trim()) {
+        body.instruction = customPrompt.trim();
+      }
       const { data, error } = await supabase.functions.invoke('photo-edit', {
-        body: { imageBase64: uploadedPreview, tool: toolId }
+        body
       });
       if (error) throw new Error(error.message);
       if (data.error) throw new Error(data.error);
