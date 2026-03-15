@@ -155,6 +155,26 @@ const PhotoTools = () => {
                     </button>
                   ))}
                 </div>
+
+                {selectedTool === 'custom' || (!isProcessing && !selectedTool) ? null : null}
+                <div className="mt-3">
+                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Custom Instruction (optional)</label>
+                  <Textarea
+                    placeholder="Describe how you want to edit the photo... e.g. 'Make it look like a watercolor painting' or 'Add warm sunset lighting'"
+                    value={customPrompt}
+                    onChange={(e) => setCustomPrompt(e.target.value)}
+                    className="min-h-[60px] text-sm bg-background/50 border-border/50 resize-none"
+                  />
+                  {customPrompt.trim() && (
+                    <Button
+                      onClick={() => handleProcessImage('custom')}
+                      disabled={isProcessing || !uploadedPreview}
+                      className="w-full mt-2 gap-2 bg-gradient-to-r from-primary to-secondary text-sm"
+                    >
+                      <PenTool className="w-4 h-4" /> Apply Custom Edit
+                    </Button>
+                  )}
+                </div>
               </GlassCard>
 
               {(isProcessing || processedImage) && (

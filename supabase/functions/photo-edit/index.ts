@@ -66,7 +66,19 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const editedImage = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    console.log('AI response structure:', JSON.stringify(data.choices?.[0]?.message, null, 2).substring(0, 500));
+    
+    // Try multiple response formats
+    let editedImage = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    if (!editedImage) {
+      // Check inline_data format
+      const parts = data.choices?.[0]?.message?.content;
+      if (Array.isArray(parts)) {
+        const imagePart = parts.find((p: any) => p.type === 'image_url' || p.inline_data);
+        if (imagePart?.image_url?.url) editedImage = imagePart.image_url.url;
+        else if (imagePart?.inline_data) editedImage = `data:${imagePart.inline_data.mime_type};base64,${imagePart.inline_data.data}`;
+      }
+    }
 
     if (!editedImage) {
       throw new Error('No edited image was returned');
