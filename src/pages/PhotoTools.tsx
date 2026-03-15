@@ -107,14 +107,29 @@ const PhotoTools = () => {
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!processedImage) return;
-    const link = document.createElement('a');
-    link.href = processedImage;
-    link.download = `edited-${Date.now()}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      let blob: Blob;
+      if (processedImage.startsWith('data:')) {
+        const res = await fetch(processedImage);
+        blob = await res.blob();
+      } else {
+        const res = await fetch(processedImage);
+        blob = await res.blob();
+      }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `edited-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast({ title: "Downloaded!", description: "Image saved to your device" });
+    } catch {
+      toast({ title: "Download failed", description: "Try long-pressing the image to save", variant: "destructive" });
+    }
   };
 
   return (
