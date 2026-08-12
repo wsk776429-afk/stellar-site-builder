@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import SEO from "@/components/SEO";
 import { 
   Send, 
   Bot, 
@@ -394,6 +395,11 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
+      <SEO
+        title="AI Chat Agents — Warper AI"
+        description="Chat with 12 specialist AI agents for maths, code, finance, study, career, health, and more. Save conversations and pick up where you left off."
+        path="/chat"
+      />
       {/* 3D Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div
@@ -411,6 +417,7 @@ const Chat = () => {
       <WarperHeader />
 
       <main className="flex-1 container mx-auto px-4 py-6 relative z-10">
+        <h1 className="sr-only">AI Chat Agents</h1>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -485,6 +492,7 @@ const Chat = () => {
                             e.stopPropagation();
                             deleteConversation(conv.id);
                           }}
+                          aria-label="Delete conversation"
                           className="opacity-0 group-hover:opacity-100 p-1 hover:bg-destructive/20 rounded transition-all"
                         >
                           <Trash2 className="w-3 h-3 text-destructive" />
@@ -541,7 +549,7 @@ const Chat = () => {
                 <selectedAgent.icon className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold">{selectedAgent.name}</h3>
+                <h2 className="font-semibold">{selectedAgent.name}</h2>
                 <p className="text-xs text-muted-foreground">{selectedAgent.description}</p>
               </div>
               {user && (
@@ -605,7 +613,7 @@ const Chat = () => {
                   disabled={isLoading}
                   className="flex-1"
                 />
-                <Button onClick={handleSend} className="glow-box" disabled={isLoading}>
+                <Button onClick={handleSend} className="glow-box" disabled={isLoading} aria-label="Send message">
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (

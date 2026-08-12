@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
+import SEO from "@/components/SEO";
 
 const photoTools = [
   { id: "auto-edit", icon: ScanEye, label: "AI Auto Edit", description: "Smart auto-fix", featured: true },
@@ -134,6 +135,11 @@ const PhotoTools = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative pb-20 md:pb-0">
+      <SEO
+        title="AI Photo Tools — Edit & Enhance Images — Warper AI"
+        description="Crop, compress, convert, and enhance your photos in the browser with Warper AI's fast, private photo tools."
+        path="/photo-tools"
+      />
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent rounded-full blur-3xl" />
       </div>
@@ -156,9 +162,9 @@ const PhotoTools = () => {
           <div className="grid lg:grid-cols-2 gap-4 md:gap-6">
             {/* Upload Section */}
             <GlassCard glowColor="primary" className="p-4 md:p-5">
-              <h3 className="font-semibold mb-3 flex items-center gap-2 text-sm md:text-base">
+              <h2 className="font-semibold mb-3 flex items-center gap-2 text-sm md:text-base">
                 <Upload className="w-4 h-4 text-primary" /> Upload Image
-              </h3>
+              </h2>
               {!uploadedPreview ? (
                 <label className="block cursor-pointer">
                   <div className="border-2 border-dashed border-border rounded-xl p-8 md:p-12 text-center hover:border-primary/50 hover:bg-primary/5 transition-all active:scale-[0.98]">
@@ -199,9 +205,9 @@ const PhotoTools = () => {
             <div className="space-y-4">
               {/* Tool buttons */}
               <GlassCard glowColor="secondary" className="p-4 md:p-5">
-                <h3 className="font-semibold mb-3 flex items-center gap-2 text-sm md:text-base">
+                <h2 className="font-semibold mb-3 flex items-center gap-2 text-sm md:text-base">
                   <Wand2 className="w-4 h-4 text-secondary" /> Editing Tools
-                </h3>
+                </h2>
                 <div className="grid grid-cols-3 gap-2">
                   {photoTools.filter(t => t.id !== 'auto-edit').map((tool) => (
                     <button
@@ -250,9 +256,9 @@ const PhotoTools = () => {
               {/* Result */}
               {(isProcessing || processedImage) && (
                 <GlassCard glowColor="accent" className="p-4 md:p-5">
-                  <h3 className="font-semibold mb-3 flex items-center gap-2 text-sm">
+                  <h2 className="font-semibold mb-3 flex items-center gap-2 text-sm">
                     <Sparkles className="w-4 h-4 text-accent" /> Result
-                  </h3>
+                  </h2>
                   <div className="rounded-xl overflow-hidden bg-muted aspect-square relative">
                     {isProcessing ? (
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">

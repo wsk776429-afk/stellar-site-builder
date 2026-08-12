@@ -20,6 +20,7 @@ import {
 import { useState } from "react";
 import { motion } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
+import SEO from "@/components/SEO";
 
 const mockSavedImages = [
   { id: 1, url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=256&h=256&fit=crop", prompt: "Futuristic city at night", date: "2024-01-15" },
@@ -79,6 +80,12 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
+      <SEO
+        title="Your Dashboard — Warper AI"
+        description="Track your credits and storage, and revisit your saved AI images and conversation history in your Warper AI dashboard."
+        path="/dashboard"
+        noindex
+      />
       {/* 3D Animated Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div
@@ -156,7 +163,7 @@ const Dashboard = () => {
             <GlassCard glowColor="primary" className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-5 h-5 text-primary" />
-                <h3 className="text-lg font-semibold">Credits Usage</h3>
+                <h2 className="text-lg font-semibold">Credits Usage</h2>
               </div>
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
@@ -174,7 +181,7 @@ const Dashboard = () => {
             <GlassCard glowColor="secondary" className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <BarChart3 className="w-5 h-5 text-secondary" />
-                <h3 className="text-lg font-semibold">Storage Usage</h3>
+                <h2 className="text-lg font-semibold">Storage Usage</h2>
               </div>
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
@@ -219,7 +226,7 @@ const Dashboard = () => {
               <TabsContent value="images">
                 <GlassCard glowColor="primary" hover3D={false} className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-semibold text-lg">Your Saved Images</h3>
+                    <h2 className="font-semibold text-lg">Your Saved Images</h2>
                     <span className="text-sm text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">{savedImages.length} images</span>
                   </div>
                   {savedImages.length === 0 ? (
@@ -256,6 +263,7 @@ const Dashboard = () => {
                                   <Button 
                                     size="icon" 
                                     variant="ghost" 
+                                    aria-label="Download image"
                                     className="h-7 w-7 hover:bg-primary/20"
                                     onClick={() => handleDownloadImage(image.url, image.prompt)}
                                   >
@@ -264,6 +272,7 @@ const Dashboard = () => {
                                   <Button 
                                     size="icon" 
                                     variant="ghost" 
+                                    aria-label="Delete image"
                                     className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/20"
                                     onClick={() => handleDeleteImage(image.id)}
                                   >
@@ -283,7 +292,7 @@ const Dashboard = () => {
               <TabsContent value="conversations">
                 <GlassCard glowColor="secondary" hover3D={false} className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-semibold text-lg">Conversation History</h3>
+                    <h2 className="font-semibold text-lg">Conversation History</h2>
                     <span className="text-sm text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">{conversations.length} conversations</span>
                   </div>
                   {conversations.length === 0 ? (
@@ -323,6 +332,7 @@ const Dashboard = () => {
                             <Button 
                               size="icon" 
                               variant="ghost" 
+                              aria-label="Delete conversation"
                               className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/20"
                               onClick={(e) => {
                                 e.stopPropagation();

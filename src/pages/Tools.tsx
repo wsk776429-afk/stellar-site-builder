@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
+import SEO from "@/components/SEO";
 
 type TabType = "pdf" | "photo" | "voice";
 
@@ -158,6 +159,11 @@ const Tools = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
+      <SEO
+        title="All AI Tools in One Place — Warper AI"
+        description="Browse every Warper AI tool: image generation, photo editing, PDF utilities, and voice to text — all in a single workspace."
+        path="/tools"
+      />
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent rounded-full blur-3xl" />
         <motion.div animate={{ scale: [1.2, 1, 1.2] }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }} className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-secondary/20 via-accent/10 to-transparent rounded-full blur-3xl" />
@@ -202,9 +208,9 @@ const Tools = () => {
                 <div className="grid lg:grid-cols-2 gap-6">
                   {/* Upload & Preview */}
                   <GlassCard glowColor="primary" className="p-5">
-                    <h3 className="font-semibold mb-4 flex items-center gap-2">
+                    <h2 className="font-semibold mb-4 flex items-center gap-2">
                       <Upload className="w-5 h-5 text-primary" /> Upload Image
-                    </h3>
+                    </h2>
                     {!uploadedPreview ? (
                       <label className="block cursor-pointer">
                         <div className="border-2 border-dashed border-border rounded-xl p-12 text-center hover:border-primary/50 hover:bg-primary/5 transition-all">
@@ -232,9 +238,9 @@ const Tools = () => {
                   {/* Tools & Result */}
                   <div className="space-y-6">
                     <GlassCard glowColor="secondary" className="p-5">
-                      <h3 className="font-semibold mb-4 flex items-center gap-2">
+                      <h2 className="font-semibold mb-4 flex items-center gap-2">
                         <Wand2 className="w-5 h-5 text-secondary" /> AI Tools
-                      </h3>
+                      </h2>
                       <div className="grid grid-cols-2 gap-3">
                         {photoTools.map((tool) => (
                           <button
@@ -257,9 +263,9 @@ const Tools = () => {
 
                     {(isProcessing || processedImage) && (
                       <GlassCard glowColor="accent" className="p-5">
-                        <h3 className="font-semibold mb-4 flex items-center gap-2">
+                        <h2 className="font-semibold mb-4 flex items-center gap-2">
                           <Sparkles className="w-5 h-5 text-accent" /> Result
-                        </h3>
+                        </h2>
                         <div className="rounded-xl overflow-hidden bg-muted aspect-square relative">
                           {isProcessing ? (
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -290,7 +296,7 @@ const Tools = () => {
                     <label className="block cursor-pointer">
                       <div className="border-2 border-dashed border-border rounded-xl p-16 text-center hover:border-primary/50 hover:bg-primary/5 transition-all">
                         <FileText className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                        <h3 className="font-semibold mb-2 text-lg">Upload a PDF</h3>
+                        <h2 className="font-semibold mb-2 text-lg">Upload a PDF</h2>
                         <p className="text-sm text-muted-foreground">Drop or click to browse • PDF files up to 50MB</p>
                       </div>
                       <input type="file" className="hidden" accept=".pdf" onChange={handleFileUpload} />
@@ -298,10 +304,10 @@ const Tools = () => {
                   ) : (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-semibold flex items-center gap-2">
+                        <h2 className="font-semibold flex items-center gap-2">
                           <FileText className="w-5 h-5 text-primary" />
                           {pdfFile?.name}
-                        </h3>
+                        </h2>
                         <div className="flex gap-2">
                           <Button variant="outline" size="sm" onClick={() => { setPdfUrl(null); setPdfFile(null); }}>
                             <RotateCw className="w-4 h-4 mr-1" /> Change
@@ -330,7 +336,7 @@ const Tools = () => {
               <motion.div key="voice" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
                 <GlassCard glowColor="secondary" className="p-6">
                   <div className="text-center mb-8">
-                    <h3 className="text-2xl font-bold mb-2">Voice to Text</h3>
+                    <h2 className="text-2xl font-bold mb-2">Voice to Text</h2>
                     <p className="text-muted-foreground">Convert speech to text in real-time</p>
                   </div>
 

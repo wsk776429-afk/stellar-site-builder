@@ -7,6 +7,7 @@ import { useState, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
+import SEO from "@/components/SEO";
 
 const PdfTools = () => {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -27,6 +28,11 @@ const PdfTools = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative pb-20 md:pb-0">
+      <SEO
+        title="PDF Tools — Read, Convert & Summarise — Warper AI"
+        description="Upload a PDF to read, convert, and summarise it with AI. Warper AI's PDF tools work right in your browser."
+        path="/pdf-tools"
+      />
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-br from-secondary/20 via-primary/10 to-transparent rounded-full blur-3xl" />
       </div>
@@ -51,7 +57,7 @@ const PdfTools = () => {
               <label className="block cursor-pointer">
                 <div className="border-2 border-dashed border-border rounded-xl p-10 md:p-16 text-center hover:border-secondary/50 hover:bg-secondary/5 transition-all active:scale-[0.98]">
                   <FileText className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
-                  <h3 className="font-semibold mb-1">Tap to upload PDF</h3>
+                  <h2 className="font-semibold mb-1">Tap to upload PDF</h2>
                   <p className="text-sm text-muted-foreground">PDF files up to 50MB</p>
                 </div>
                 <input type="file" className="hidden" accept=".pdf" onChange={handleFileUpload} />
@@ -59,10 +65,10 @@ const PdfTools = () => {
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <h3 className="font-semibold flex items-center gap-2 text-sm truncate max-w-[200px]">
+                  <h2 className="font-semibold flex items-center gap-2 text-sm truncate max-w-[200px]">
                     <FileText className="w-4 h-4 text-secondary shrink-0" />
                     {pdfFile?.name}
-                  </h3>
+                  </h2>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => { setPdfUrl(null); setPdfFile(null); }}>
                       <RotateCw className="w-4 h-4 mr-1" /> Change

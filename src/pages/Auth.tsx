@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable";
 import { z } from "zod";
 import { Mail, Lock, Loader2, Sparkles } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const authSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -111,6 +112,11 @@ const Auth = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
+      <SEO
+        title="Sign In or Sign Up — Warper AI"
+        description="Sign in to Warper AI with email, Google, or Apple to save your AI images, chats, and voice sessions across devices."
+        path="/auth"
+      />
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
@@ -127,7 +133,7 @@ const Auth = () => {
             </div>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            WARPER AI
+            WARPER AI — Sign In or Sign Up
           </h1>
           <p className="text-muted-foreground mt-2">
             {isLogin ? "Welcome back! Sign in to continue." : "Create an account to get started."}
