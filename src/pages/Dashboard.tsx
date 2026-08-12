@@ -263,6 +263,7 @@ const Dashboard = () => {
                                   <Button 
                                     size="icon" 
                                     variant="ghost" 
+                                    aria-label="Download image"
                                     className="h-7 w-7 hover:bg-primary/20"
                                     onClick={() => handleDownloadImage(image.url, image.prompt)}
                                   >
@@ -271,6 +272,7 @@ const Dashboard = () => {
                                   <Button 
                                     size="icon" 
                                     variant="ghost" 
+                                    aria-label="Delete image"
                                     className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/20"
                                     onClick={() => handleDeleteImage(image.id)}
                                   >
@@ -330,6 +332,7 @@ const Dashboard = () => {
                             <Button 
                               size="icon" 
                               variant="ghost" 
+                              aria-label="Delete conversation"
                               className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/20"
                               onClick={(e) => {
                                 e.stopPropagation();
