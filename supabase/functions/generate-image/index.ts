@@ -18,14 +18,15 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    if (!prompt) {
+    if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
       return new Response(
         JSON.stringify({ error: 'Prompt is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    let enhancedPrompt = prompt;
+    // Keep prompts concise: very long pasted text makes the model reply with text instead of an image.
+    let enhancedPrompt = prompt.trim().slice(0, 1500);
     if (style && style !== 'default') {
       const styleModifiers: Record<string, string> = {
         realistic: 'photorealistic, highly detailed, professional photography',
@@ -35,7 +36,7 @@ serve(async (req) => {
         '3d': '3D rendered, ray tracing, realistic lighting, CGI quality',
       };
       if (styleModifiers[style]) {
-        enhancedPrompt = `${prompt}, ${styleModifiers[style]}`;
+        enhancedPrompt = `${enhancedPrompt}, ${styleModifiers[style]}`;
       }
     }
 
@@ -45,21 +46,18 @@ serve(async (req) => {
 
     console.log('Generating image with prompt:', enhancedPrompt);
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/images/generations', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-3-pro-image-preview',
+        model: 'google/gemini-3.1-flash-image',
         messages: [
-          {
-            role: 'user',
-            content: `Generate an image: ${enhancedPrompt}`
-          }
+          { role: 'user', content: enhancedPrompt }
         ],
-        modalities: ['image', 'text']
+        modalities: ['image', 'text'],
       }),
     });
 
@@ -72,24 +70,30 @@ serve(async (req) => {
           { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: 'AI credits exhausted. Please add credits to continue.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
     const data = await response.json();
     console.log('AI response received');
 
-    const imageData = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    const b64 = data?.data?.[0]?.b64_json;
+    const imageData = b64
+      ? `data:image/png;base64,${b64}`
+      : data?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
 
     if (!imageData) {
       console.error('No image in response:', JSON.stringify(data).substring(0, 500));
-      throw new Error('No image was generated. Please try a different prompt.');
+      throw new Error('No image was generated. Try a shorter, more visual prompt.');
     }
 
     return new Response(
-      JSON.stringify({ 
-        imageUrl: imageData,
-        description: data.choices?.[0]?.message?.content || 'Image generated successfully'
-      }),
+      JSON.stringify({ imageUrl: imageData }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
