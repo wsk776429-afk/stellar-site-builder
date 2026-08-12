@@ -9,8 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
 import SEO from "@/components/SEO";
+import { 
   Send, 
   Bot, 
   User, 
