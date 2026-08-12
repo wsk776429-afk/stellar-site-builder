@@ -133,7 +133,7 @@ const Auth = () => {
             </div>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            WARPER AI
+            WARPER AI — Sign In or Sign Up
           </h1>
           <p className="text-muted-foreground mt-2">
             {isLogin ? "Welcome back! Sign in to continue." : "Create an account to get started."}

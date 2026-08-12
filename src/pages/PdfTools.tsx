@@ -57,7 +57,7 @@ const PdfTools = () => {
               <label className="block cursor-pointer">
                 <div className="border-2 border-dashed border-border rounded-xl p-10 md:p-16 text-center hover:border-secondary/50 hover:bg-secondary/5 transition-all active:scale-[0.98]">
                   <FileText className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
-                  <h3 className="font-semibold mb-1">Tap to upload PDF</h3>
+                  <h2 className="font-semibold mb-1">Tap to upload PDF</h2>
                   <p className="text-sm text-muted-foreground">PDF files up to 50MB</p>
                 </div>
                 <input type="file" className="hidden" accept=".pdf" onChange={handleFileUpload} />
@@ -65,10 +65,10 @@ const PdfTools = () => {
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <h3 className="font-semibold flex items-center gap-2 text-sm truncate max-w-[200px]">
+                  <h2 className="font-semibold flex items-center gap-2 text-sm truncate max-w-[200px]">
                     <FileText className="w-4 h-4 text-secondary shrink-0" />
                     {pdfFile?.name}
-                  </h3>
+                  </h2>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => { setPdfUrl(null); setPdfFile(null); }}>
                       <RotateCw className="w-4 h-4 mr-1" /> Change

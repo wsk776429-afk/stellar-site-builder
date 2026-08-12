@@ -203,10 +203,10 @@ const ImageStudio = () => {
 
               {/* Example Prompts */}
               <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
-                <h3 className="text-sm font-semibold text-primary flex items-center gap-2 mb-3">
+                <h2 className="text-sm font-semibold text-primary flex items-center gap-2 mb-3">
                   <Lightbulb className="w-4 h-4" />
                   Example Prompts
-                </h3>
+                </h2>
                 <ul className="space-y-2">
                   {examplePrompts.map((example, index) => (
                     <li key={index} onClick={() => setPrompt(example)} className="text-sm text-muted-foreground hover:text-primary cursor-pointer transition-colors flex items-start gap-2">
@@ -224,7 +224,7 @@ const ImageStudio = () => {
                 {(isGenerating || generatedImage) && (
                   <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
                     <GlassCard glowColor="secondary" className="p-5 mb-6">
-                      <h3 className="font-semibold mb-4 flex items-center gap-2">
+                      <h2 className="font-semibold mb-4 flex items-center gap-2">
                         <Wand2 className="w-5 h-5 text-secondary" />
                         Generated Image
                         {!isGenerating && (
@@ -232,7 +232,7 @@ const ImageStudio = () => {
                             {styleOptions.find(s => s.id === style)?.label} • {quality.toUpperCase()}
                           </span>
                         )}
-                      </h3>
+                      </h2>
                       <div className="rounded-xl overflow-hidden bg-muted aspect-square relative">
                         {isGenerating ? (
                           <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -257,7 +257,7 @@ const ImageStudio = () => {
 
               <GlassCard glowColor="accent" className="p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold flex items-center gap-2"><Sparkles className="w-5 h-5 text-accent" /> Your Creations</h3>
+                  <h2 className="font-semibold flex items-center gap-2"><Sparkles className="w-5 h-5 text-accent" /> Your Creations</h2>
                   <span className="text-sm text-muted-foreground px-3 py-1 rounded-full bg-muted/50">{generatedImages.length} images</span>
                 </div>
                 {generatedImages.length === 0 ? (

@@ -127,6 +127,8 @@ const Voice = () => {
           >
             <motion.button
               onClick={toggleListening}
+              aria-label={isListening ? "Stop listening" : "Start listening"}
+              aria-pressed={isListening}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className={`relative w-36 h-36 rounded-full flex items-center justify-center transition-all duration-300 ${
@@ -234,7 +236,7 @@ const Voice = () => {
             <GlassCard glowColor="accent" hover3D={false} className="p-5">
               <div className="flex items-center gap-2 mb-3">
                 <Settings className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-semibold">Tips</h3>
+                <h2 className="text-sm font-semibold">Tips</h2>
               </div>
               <ul className="text-sm text-muted-foreground space-y-2">
                 <li className="flex items-center gap-2">

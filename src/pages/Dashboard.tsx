@@ -163,7 +163,7 @@ const Dashboard = () => {
             <GlassCard glowColor="primary" className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-5 h-5 text-primary" />
-                <h3 className="text-lg font-semibold">Credits Usage</h3>
+                <h2 className="text-lg font-semibold">Credits Usage</h2>
               </div>
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
@@ -181,7 +181,7 @@ const Dashboard = () => {
             <GlassCard glowColor="secondary" className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <BarChart3 className="w-5 h-5 text-secondary" />
-                <h3 className="text-lg font-semibold">Storage Usage</h3>
+                <h2 className="text-lg font-semibold">Storage Usage</h2>
               </div>
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
@@ -226,7 +226,7 @@ const Dashboard = () => {
               <TabsContent value="images">
                 <GlassCard glowColor="primary" hover3D={false} className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-semibold text-lg">Your Saved Images</h3>
+                    <h2 className="font-semibold text-lg">Your Saved Images</h2>
                     <span className="text-sm text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">{savedImages.length} images</span>
                   </div>
                   {savedImages.length === 0 ? (
@@ -290,7 +290,7 @@ const Dashboard = () => {
               <TabsContent value="conversations">
                 <GlassCard glowColor="secondary" hover3D={false} className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-semibold text-lg">Conversation History</h3>
+                    <h2 className="font-semibold text-lg">Conversation History</h2>
                     <span className="text-sm text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">{conversations.length} conversations</span>
                   </div>
                   {conversations.length === 0 ? (

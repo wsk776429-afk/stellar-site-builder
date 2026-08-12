@@ -417,6 +417,7 @@ const Chat = () => {
       <WarperHeader />
 
       <main className="flex-1 container mx-auto px-4 py-6 relative z-10">
+        <h1 className="sr-only">AI Chat Agents</h1>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -491,6 +492,7 @@ const Chat = () => {
                             e.stopPropagation();
                             deleteConversation(conv.id);
                           }}
+                          aria-label="Delete conversation"
                           className="opacity-0 group-hover:opacity-100 p-1 hover:bg-destructive/20 rounded transition-all"
                         >
                           <Trash2 className="w-3 h-3 text-destructive" />
@@ -547,7 +549,7 @@ const Chat = () => {
                 <selectedAgent.icon className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold">{selectedAgent.name}</h3>
+                <h2 className="font-semibold">{selectedAgent.name}</h2>
                 <p className="text-xs text-muted-foreground">{selectedAgent.description}</p>
               </div>
               {user && (
@@ -611,7 +613,7 @@ const Chat = () => {
                   disabled={isLoading}
                   className="flex-1"
                 />
-                <Button onClick={handleSend} className="glow-box" disabled={isLoading}>
+                <Button onClick={handleSend} className="glow-box" disabled={isLoading} aria-label="Send message">
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (

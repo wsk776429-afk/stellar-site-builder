@@ -153,6 +153,8 @@
              whileTap={{ scale: 0.9 }}
              className="md:hidden p-2.5 rounded-xl bg-card/50 border border-white/10 hover:border-primary/30 transition-colors"
              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+             aria-expanded={mobileMenuOpen}
            >
              <AnimatePresence mode="wait">
                {mobileMenuOpen ? (
