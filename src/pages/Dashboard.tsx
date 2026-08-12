@@ -20,6 +20,7 @@ import {
 import { useState } from "react";
 import { motion } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
+import SEO from "@/components/SEO";
 
 const mockSavedImages = [
   { id: 1, url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=256&h=256&fit=crop", prompt: "Futuristic city at night", date: "2024-01-15" },
@@ -79,6 +80,12 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
+      <SEO
+        title="Your Dashboard — Warper AI"
+        description="Track your credits and storage, and revisit your saved AI images and conversation history in your Warper AI dashboard."
+        path="/dashboard"
+        noindex
+      />
       {/* 3D Animated Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div

@@ -24,6 +24,7 @@
    Rocket
  } from "lucide-react";
  import { Link } from "react-router-dom";
+import SEO from "@/components/SEO";
  
  const Index = () => {
    const containerRef = useRef<HTMLDivElement>(null);
@@ -88,6 +89,22 @@
  
    return (
      <div ref={containerRef} className="min-h-screen bg-background flex flex-col overflow-x-hidden">
+      <SEO
+        title="Warper AI — Smart AI Tools for Chat, Images & PDFs"
+        description="Warper AI brings AI chat agents, an image studio, photo editing, PDF tools, and voice-to-text together in one fast, free workspace."
+        path="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          name: "Warper AI",
+          applicationCategory: "UtilitiesApplication",
+          operatingSystem: "Web",
+          url: "https://searcherin.lovable.app/",
+          description:
+            "AI chat agents, image generation, photo editing, PDF tools, and voice to text in one web app.",
+          offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        }}
+      />
        <WarperHeader />
  
        <main className="flex-1 relative">

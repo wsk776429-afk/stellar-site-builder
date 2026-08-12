@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Mic, MicOff, Volume2, User, Bot, Settings, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
+import SEO from "@/components/SEO";
 
 const Voice = () => {
   const [isListening, setIsListening] = useState(false);
@@ -32,6 +33,11 @@ const Voice = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
+      <SEO
+        title="Voice to Text Assistant — Warper AI"
+        description="Speak and get instant AI answers. Warper AI's voice assistant transcribes your speech and replies out loud in a male or female voice."
+        path="/voice"
+      />
       {/* 3D Animated Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div

@@ -7,6 +7,7 @@ import { useState, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
+import SEO from "@/components/SEO";
 
 const PdfTools = () => {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -27,6 +28,11 @@ const PdfTools = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative pb-20 md:pb-0">
+      <SEO
+        title="PDF Tools — Read, Convert & Summarise — Warper AI"
+        description="Upload a PDF to read, convert, and summarise it with AI. Warper AI's PDF tools work right in your browser."
+        path="/pdf-tools"
+      />
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-br from-secondary/20 via-primary/10 to-transparent rounded-full blur-3xl" />
       </div>

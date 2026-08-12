@@ -10,6 +10,7 @@ import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
+import SEO from "@/components/SEO";
   Send, 
   Bot, 
   User, 
@@ -394,6 +395,11 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
+      <SEO
+        title="AI Chat Agents — Warper AI"
+        description="Chat with 12 specialist AI agents for maths, code, finance, study, career, health, and more. Save conversations and pick up where you left off."
+        path="/chat"
+      />
       {/* 3D Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div

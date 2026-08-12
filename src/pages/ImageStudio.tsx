@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
+import SEO from "@/components/SEO";
 
 const qualityOptions = [
   { id: "hd", label: "HD", description: "Standard" },
@@ -91,6 +92,11 @@ const ImageStudio = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
+      <SEO
+        title="AI Image Studio — Generate Images — Warper AI"
+        description="Turn a text prompt into realistic, digital art, oil, watercolour, or 3D images with Warper AI's image studio, then save your creations."
+        path="/image"
+      />
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent rounded-full blur-3xl" />
         <motion.div animate={{ scale: [1.2, 1, 1.2], rotate: [360, 180, 0] }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }} className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-secondary/20 via-accent/10 to-transparent rounded-full blur-3xl" />

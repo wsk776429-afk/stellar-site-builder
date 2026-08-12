@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
+import SEO from "@/components/SEO";
 
 const photoTools = [
   { id: "auto-edit", icon: ScanEye, label: "AI Auto Edit", description: "Smart auto-fix", featured: true },
@@ -134,6 +135,11 @@ const PhotoTools = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative pb-20 md:pb-0">
+      <SEO
+        title="AI Photo Tools — Edit & Enhance Images — Warper AI"
+        description="Crop, compress, convert, and enhance your photos in the browser with Warper AI's fast, private photo tools."
+        path="/photo-tools"
+      />
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent rounded-full blur-3xl" />
       </div>

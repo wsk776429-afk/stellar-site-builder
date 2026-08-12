@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import GlassCard from "@/components/GlassCard";
+import SEO from "@/components/SEO";
 
 type TabType = "pdf" | "photo" | "voice";
 
@@ -158,6 +159,11 @@ const Tools = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
+      <SEO
+        title="All AI Tools in One Place — Warper AI"
+        description="Browse every Warper AI tool: image generation, photo editing, PDF utilities, and voice to text — all in a single workspace."
+        path="/tools"
+      />
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }} transition={{ duration: 30, repeat: Infinity, ease: "linear" }} className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent rounded-full blur-3xl" />
         <motion.div animate={{ scale: [1.2, 1, 1.2] }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }} className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-secondary/20 via-accent/10 to-transparent rounded-full blur-3xl" />
