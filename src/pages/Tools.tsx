@@ -77,6 +77,11 @@ const Tools = () => {
     setProcessedImage(null);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({ title: "Sign in required", description: "Please sign in to use AI tools.", variant: "destructive" });
+        return;
+      }
       const { data, error } = await supabase.functions.invoke('photo-edit', {
         body: { imageBase64: uploadedPreview, tool: toolId }
       });
