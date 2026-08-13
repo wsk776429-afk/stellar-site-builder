@@ -121,7 +121,7 @@ import SEO from "@/components/SEO";
        <main className="flex-1 relative">
          {/* 3D Hero Scene Background */}
          <motion.div 
-           className="fixed inset-0 pointer-events-none opacity-60"
+           className="fixed inset-0 pointer-events-none opacity-25"
            style={{ y: backgroundY }}
          >
            <HeroScene />
