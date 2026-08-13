@@ -88,6 +88,11 @@ const PhotoTools = () => {
       if (toolId === 'custom' && customPrompt.trim()) {
         body.instruction = customPrompt.trim();
       }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({ title: "Sign in required", description: "Please sign in to use AI tools.", variant: "destructive" });
+        return;
+      }
       const { data, error } = await supabase.functions.invoke('photo-edit', { body });
       
       if (error) throw new Error(error.message);
