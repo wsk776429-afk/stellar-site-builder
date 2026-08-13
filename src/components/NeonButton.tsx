@@ -19,21 +19,21 @@
  }: NeonButtonProps) => {
    const variantStyles = {
      primary: {
-       bg: "bg-gradient-to-r from-primary to-cyan-400",
-       shadow: "shadow-[0_0_30px_rgba(74,222,205,0.5)]",
-       hoverShadow: "hover:shadow-[0_0_50px_rgba(74,222,205,0.7)]",
+       bg: "bg-gradient-to-r from-secondary via-primary to-accent",
+       shadow: "shadow-[0_0_30px_hsl(var(--primary)/0.55)]",
+       hoverShadow: "hover:shadow-[0_0_50px_hsl(var(--primary)/0.75)]",
        border: "border-primary/50",
      },
      secondary: {
-       bg: "bg-gradient-to-r from-secondary to-purple-400",
-       shadow: "shadow-[0_0_30px_rgba(168,85,247,0.5)]",
-       hoverShadow: "hover:shadow-[0_0_50px_rgba(168,85,247,0.7)]",
+       bg: "bg-gradient-to-r from-secondary to-primary",
+       shadow: "shadow-[0_0_30px_hsl(var(--secondary)/0.55)]",
+       hoverShadow: "hover:shadow-[0_0_50px_hsl(var(--secondary)/0.75)]",
        border: "border-secondary/50",
      },
      accent: {
        bg: "bg-gradient-to-r from-accent to-pink-400",
-       shadow: "shadow-[0_0_30px_rgba(232,121,249,0.5)]",
-       hoverShadow: "hover:shadow-[0_0_50px_rgba(232,121,249,0.7)]",
+       shadow: "shadow-[0_0_30px_hsl(var(--accent)/0.55)]",
+       hoverShadow: "hover:shadow-[0_0_50px_hsl(var(--accent)/0.75)]",
        border: "border-accent/50",
      },
    };
