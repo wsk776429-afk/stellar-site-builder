@@ -1,6 +1,6 @@
  import { Link, useLocation, useNavigate } from "react-router-dom";
  import { motion, AnimatePresence } from "framer-motion";
- import { Zap, Menu, X, LogOut, User, Sparkles } from "lucide-react";
+ import { Menu, X, LogOut, User, Sparkles } from "lucide-react";
  import { useState } from "react";
  import { useAuth } from "@/hooks/useAuth";
  import {
@@ -11,6 +11,7 @@
    DropdownMenuTrigger,
  } from "@/components/ui/dropdown-menu";
  import NeonButton from "./NeonButton";
+ import WarperLogo from "./WarperLogo";
  
  const WarperHeader = () => {
    const location = useLocation();
@@ -50,19 +51,15 @@
            {/* Logo */}
            <Link to="/" className="flex items-center gap-3 group">
              <motion.div 
-               whileHover={{ scale: 1.1, rotate: 5 }}
+               whileHover={{ scale: 1.08 }}
                whileTap={{ scale: 0.95 }}
-               className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-primary via-cyan-400 to-secondary 
-                          flex items-center justify-center shadow-lg shadow-primary/30
-                          group-hover:shadow-primary/50 transition-shadow duration-300"
+               className="relative flex items-center justify-center"
              >
-               <Zap className="w-6 h-6 text-primary-foreground" />
-               {/* Glow effect */}
-               <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary to-secondary opacity-50 blur-lg -z-10" />
+               <WarperLogo className="w-10 h-10 drop-shadow-[0_0_18px_hsl(var(--secondary)/0.6)]" />
              </motion.div>
              <span className="text-xl font-bold">
                <span className="text-foreground">Warper</span>
-               <span className="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent"> AI</span>
+               <span className="bg-gradient-to-r from-secondary via-primary to-accent bg-clip-text text-transparent"> AI</span>
              </span>
            </Link>
  

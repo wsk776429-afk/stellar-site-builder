@@ -7,6 +7,9 @@
  import FloatingIcon from "@/components/FloatingIcon";
  import NeonButton from "@/components/NeonButton";
  import ParallaxSection from "@/components/ParallaxSection";
+ import WarperLogo from "@/components/WarperLogo";
+ import BrandBackdrop from "@/components/BrandBackdrop";
+
  import { 
    MessageSquare, 
    Image, 
@@ -74,6 +77,14 @@ import SEO from "@/components/SEO";
      },
    ];
  
+   const heroPills = [
+     { to: "/chat", icon: MessageSquare, label: "Chat" },
+     { to: "/image", icon: Image, label: "Image Studio" },
+     { to: "/tools", icon: FileText, label: "Photo & PDF Tools" },
+     { to: "/voice", icon: Volume2, label: "Voice" },
+   ];
+ 
+
    const stats = [
      { label: "Active Users", value: "10K+", color: "primary" as const },
      { label: "Voice Chats", value: "100K+", color: "pink" as const },
@@ -110,126 +121,102 @@ import SEO from "@/components/SEO";
        <main className="flex-1 relative">
          {/* 3D Hero Scene Background */}
          <motion.div 
-           className="fixed inset-0 pointer-events-none"
+           className="fixed inset-0 pointer-events-none opacity-25"
            style={{ y: backgroundY }}
          >
            <HeroScene />
          </motion.div>
- 
+
          {/* Gradient overlays for depth */}
          <div className="fixed inset-0 pointer-events-none bg-gradient-to-b from-background/30 via-transparent to-background/80" />
-         <div className="fixed inset-0 pointer-events-none bg-gradient-radial from-transparent via-background/20 to-background/60" />
- 
-         {/* Hero Section */}
-         <section className="relative container mx-auto px-4 py-20 md:py-32 min-h-[90vh] flex items-center">
-           <div className="max-w-5xl mx-auto text-center relative z-10">
-             {/* Floating decorative icons */}
-             <div className="absolute -top-10 left-0 md:left-10 hidden md:block">
-               <FloatingIcon icon={Star} color="primary" delay={0} floatIntensity={15} />
-             </div>
-             <div className="absolute top-20 right-0 md:right-10 hidden md:block">
-               <FloatingIcon icon={Heart} color="accent" delay={0.5} floatIntensity={12} />
-             </div>
-             <div className="absolute bottom-0 left-1/4 hidden md:block">
-               <FloatingIcon icon={Rocket} color="secondary" delay={1} floatIntensity={18} />
-             </div>
- 
-             {/* Badge */}
-             <motion.div
-               initial={{ opacity: 0, y: 20, scale: 0.9 }}
-               animate={{ opacity: 1, y: 0, scale: 1 }}
-               transition={{ duration: 0.6 }}
-               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full 
-                          bg-gradient-to-r from-primary/20 via-secondary/10 to-accent/20 
-                          border border-primary/30 backdrop-blur-xl mb-8
-                          shadow-[0_0_30px_rgba(74,222,205,0.2)]"
-             >
+
+         {/* Hero Section — brand banner style */}
+         <section className="relative overflow-hidden border-b border-white/5">
+           <BrandBackdrop />
+
+           <div className="relative container mx-auto px-4 py-24 md:py-36 min-h-[88vh] flex items-center">
+             <div className="max-w-5xl mx-auto text-center relative z-10 w-full">
+               {/* Sparkle cluster */}
                <motion.div
-                 animate={{ rotate: 360 }}
-                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                 initial={{ opacity: 0, scale: 0.6 }}
+                 animate={{ opacity: 1, scale: 1 }}
+                 transition={{ duration: 0.7 }}
+                 className="flex items-center justify-center gap-1 mb-6"
                >
-                 <Sparkles className="w-4 h-4 text-primary" />
+                 <Sparkles className="w-10 h-10 text-primary drop-shadow-[0_0_25px_hsl(var(--primary)/0.9)]" />
+                 <Sparkles className="w-4 h-4 text-accent -mt-6" />
                </motion.div>
-               <span className="text-sm font-medium bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                 Powered by Advanced AI
-               </span>
-             </motion.div>
-             
-             {/* Main heading with 3D text effect */}
-             <motion.h1 
-               initial={{ opacity: 0, y: 30 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ duration: 0.8, delay: 0.2 }}
-               className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8"
-             >
-               <span className="text-foreground">Welcome to </span>
-               <br />
-               <motion.span 
-                 className="inline-block bg-gradient-to-r from-primary via-cyan-400 to-secondary bg-clip-text text-transparent
-                            drop-shadow-[0_0_30px_rgba(74,222,205,0.5)]"
-                 animate={{ 
-                   textShadow: [
-                     "0 0 20px rgba(74,222,205,0.5)",
-                     "0 0 40px rgba(74,222,205,0.8)",
-                     "0 0 20px rgba(74,222,205,0.5)",
-                   ]
-                 }}
-                 transition={{ duration: 2, repeat: Infinity }}
-               >
-                 Warper AI
-               </motion.span>
-             </motion.h1>
-             
-             <motion.p 
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ duration: 0.8, delay: 0.4 }}
-               className="text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed"
-             >
-               Your intelligent assistant platform powered by multiple specialized agents. 
-               <span className="text-primary"> Chat, create, and explore</span> with cutting-edge AI technology.
-             </motion.p>
- 
-             <motion.div 
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ duration: 0.8, delay: 0.6 }}
-               className="flex flex-col sm:flex-row gap-4 justify-center"
-             >
-               <Link to="/chat">
-                 <NeonButton variant="primary" size="lg">
-                   Get Started Free
-                   <ArrowRight className="w-5 h-5" />
-                 </NeonButton>
-               </Link>
-               <Link to="/image">
-                 <NeonButton variant="secondary" size="lg">
-                   Explore Features
-                 </NeonButton>
-               </Link>
-             </motion.div>
- 
-             {/* Scroll indicator */}
-             <motion.div
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               transition={{ delay: 1.5 }}
-               className="absolute bottom-10 left-1/2 -translate-x-1/2"
-             >
+
+               {/* Logo + wordmark */}
                <motion.div
-                 animate={{ y: [0, 10, 0] }}
-                 transition={{ duration: 1.5, repeat: Infinity }}
-                 className="w-6 h-10 rounded-full border-2 border-primary/50 flex items-start justify-center p-2"
+                 initial={{ opacity: 0, y: 24 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ duration: 0.8, delay: 0.1 }}
+                 className="flex items-center justify-center gap-4 md:gap-6"
                >
-                 <motion.div
-                   animate={{ opacity: [1, 0.3, 1] }}
-                   transition={{ duration: 1.5, repeat: Infinity }}
-                   className="w-1.5 h-3 bg-primary rounded-full"
-                 />
+                 <WarperLogo className="w-16 h-16 md:w-28 md:h-28 drop-shadow-[0_0_35px_hsl(var(--secondary)/0.6)]" />
+                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground">
+                   Warper AI
+                 </h1>
                </motion.div>
-             </motion.div>
+
+               {/* Tagline */}
+               <motion.p
+                 initial={{ opacity: 0, y: 16 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ duration: 0.8, delay: 0.3 }}
+                 className="mt-4 text-2xl md:text-4xl font-semibold tracking-tight text-foreground/90"
+               >
+                 Smart AI Tools
+               </motion.p>
+
+               {/* Feature pill row */}
+               <motion.div
+                 initial={{ opacity: 0, y: 16 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ duration: 0.8, delay: 0.45 }}
+                 className="mt-7 flex flex-wrap items-center justify-center gap-x-3 gap-y-3 text-sm md:text-base"
+               >
+                 {heroPills.map((pill, index) => (
+                   <div key={pill.label} className="flex items-center gap-3">
+                     <Link
+                       to={pill.to}
+                       className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10
+                                  bg-card/40 backdrop-blur-md text-foreground/90
+                                  hover:border-primary/50 hover:text-foreground transition-colors"
+                     >
+                       <pill.icon className="w-4 h-4 text-accent" />
+                       <span className="font-medium">{pill.label}</span>
+                     </Link>
+                     {index < heroPills.length - 1 && (
+                       <span className="hidden md:inline text-primary/60">•</span>
+                     )}
+                   </div>
+                 ))}
+               </motion.div>
+
+               <motion.div 
+                 initial={{ opacity: 0, y: 20 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ duration: 0.8, delay: 0.6 }}
+                 className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
+               >
+                 <Link to="/chat">
+                   <NeonButton variant="primary" size="lg">
+                     Get Started Free
+                     <ArrowRight className="w-5 h-5" />
+                   </NeonButton>
+                 </Link>
+                 <Link to="/image">
+                   <NeonButton variant="secondary" size="lg">
+                     Explore Features
+                   </NeonButton>
+                 </Link>
+               </motion.div>
+             </div>
            </div>
          </section>
+
  
          {/* Feature Cards - Floating in 3D space */}
          <section className="relative container mx-auto px-4 py-20">
