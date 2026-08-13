@@ -77,6 +77,14 @@ import SEO from "@/components/SEO";
      },
    ];
  
+   const heroPills = [
+     { to: "/chat", icon: MessageSquare, label: "Chat" },
+     { to: "/image", icon: Image, label: "Image Studio" },
+     { to: "/tools", icon: FileText, label: "Photo & PDF Tools" },
+     { to: "/voice", icon: Volume2, label: "Voice" },
+   ];
+ 
+
    const stats = [
      { label: "Active Users", value: "10K+", color: "primary" as const },
      { label: "Voice Chats", value: "100K+", color: "pink" as const },
