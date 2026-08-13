@@ -59,8 +59,22 @@ const ImageStudio = () => {
         body: { prompt, style, quality }
       });
 
-      if (error) throw new Error(error.message || 'Failed to generate image');
-      if (data.error) throw new Error(data.error);
+      if (error) {
+        // Non-2xx responses put the JSON body on error.context — surface its message
+        let message = error.message || 'Failed to generate image';
+        const res = (error as { context?: Response }).context;
+        if (res && typeof res.json === 'function') {
+          try {
+            const body = await res.json();
+            if (body?.error) message = body.error;
+          } catch {
+            /* keep default message */
+          }
+        }
+        throw new Error(message);
+      }
+      if (data?.error) throw new Error(data.error);
+
 
       if (data.imageUrl) {
         setGeneratedImage(data.imageUrl);
