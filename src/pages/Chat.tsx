@@ -230,7 +230,17 @@ const Chat = () => {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
-    
+
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to chat with the AI assistants.",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+
     let convId = currentConversationId;
     
     // Create new conversation if needed
@@ -238,6 +248,7 @@ const Chat = () => {
       convId = await createNewConversation();
       if (!convId) return;
     }
+
 
     const userMessage: Message = {
       id: Date.now().toString(),
