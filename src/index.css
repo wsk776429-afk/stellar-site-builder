@@ -4,50 +4,51 @@
 
 @layer base {
   :root {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
+    --background: 240 60% 4%;
+    --foreground: 210 40% 99%;
 
-    --card: 222 47% 9%;
-    --card-foreground: 210 40% 98%;
+    --card: 243 50% 8%;
+    --card-foreground: 210 40% 99%;
 
-    --popover: 222 47% 9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 243 50% 8%;
+    --popover-foreground: 210 40% 99%;
 
-    --primary: 174 72% 56%;
-    --primary-foreground: 222 47% 6%;
+    --primary: 226 95% 62%;
+    --primary-foreground: 240 60% 4%;
 
-    --secondary: 260 60% 55%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 264 90% 66%;
+    --secondary-foreground: 210 40% 99%;
 
-    --muted: 217 32% 15%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 240 30% 14%;
+    --muted-foreground: 225 22% 70%;
 
-    --accent: 280 65% 60%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 205 95% 58%;
+    --accent-foreground: 240 60% 4%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --ring: 174 72% 56%;
+    --border: 240 35% 18%;
+    --input: 240 35% 18%;
+    --ring: 226 95% 62%;
 
     --radius: 0.75rem;
 
-    --chart-1: 174 72% 56%;
-    --chart-2: 260 60% 55%;
-    --chart-3: 45 93% 58%;
-    --chart-4: 340 75% 60%;
-    --chart-5: 120 60% 50%;
+    --chart-1: 226 95% 62%;
+    --chart-2: 264 90% 66%;
+    --chart-3: 205 95% 58%;
+    --chart-4: 320 75% 65%;
+    --chart-5: 174 72% 56%;
      
-     /* New pastel-neon accent colors */
-     --neon-cyan: 174 72% 56%;
-     --neon-purple: 260 60% 55%;
+     /* Brand accent colors */
+     --neon-cyan: 195 95% 60%;
+     --neon-purple: 264 90% 66%;
      --neon-pink: 320 70% 70%;
-     --neon-blue: 220 80% 60%;
-     --pastel-lavender: 270 50% 80%;
-     --pastel-mint: 160 50% 80%;
+     --neon-blue: 226 95% 62%;
+     --pastel-lavender: 264 60% 82%;
+     --pastel-mint: 175 55% 80%;
      --pastel-peach: 20 80% 85%;
+
 
     --sidebar-background: 222 47% 8%;
     --sidebar-foreground: 210 40% 98%;
