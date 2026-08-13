@@ -7,6 +7,9 @@
  import FloatingIcon from "@/components/FloatingIcon";
  import NeonButton from "@/components/NeonButton";
  import ParallaxSection from "@/components/ParallaxSection";
+ import WarperLogo from "@/components/WarperLogo";
+ import BrandBackdrop from "@/components/BrandBackdrop";
+
  import { 
    MessageSquare, 
    Image, 
