@@ -41,6 +41,22 @@ const compressImage = (dataUrl: string, maxWidth = 1024): Promise<string> => {
   });
 };
 
+const getFunctionErrorMessage = async (error: unknown): Promise<string> => {
+  if (typeof error !== "object" || error === null) return "Processing failed";
+
+  const functionError = error as { message?: string; context?: Response };
+  if (functionError.context instanceof Response) {
+    try {
+      const payload = await functionError.context.clone().json() as { error?: string };
+      if (payload.error) return payload.error;
+    } catch {
+      // Fall back to the SDK error message when the response is not JSON.
+    }
+  }
+
+  return functionError.message || "Processing failed";
+};
+
 const PhotoTools = () => {
   const [uploadedPreview, setUploadedPreview] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
@@ -95,7 +111,7 @@ const PhotoTools = () => {
       }
       const { data, error } = await supabase.functions.invoke('photo-edit', { body });
       
-      if (error) throw new Error(error.message);
+      if (error) throw error;
       if (data?.error) throw new Error(data.error);
       if (data?.imageUrl) {
         setProcessedImage(data.imageUrl);
@@ -104,8 +120,8 @@ const PhotoTools = () => {
       } else {
         throw new Error('No image returned');
       }
-    } catch (error: any) {
-      const msg = error?.message || "Processing failed";
+    } catch (error: unknown) {
+      const msg = await getFunctionErrorMessage(error);
       toast({ title: "Processing Failed", description: msg, variant: "destructive" });
     } finally {
       setIsProcessing(false);
