@@ -200,6 +200,48 @@ const Auth = () => {
               )}
             </Button>
 
+            {justSignedUp && !isLogin && (
+              <div className="space-y-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                <p className="text-sm text-muted-foreground text-center">
+                  Account created for <span className="text-foreground font-medium">{email}</span>
+                </p>
+                <Button
+                  type="button"
+                  className="w-full glow-box"
+                  disabled={isLoading}
+                  onClick={async () => {
+                    setIsLoading(true);
+                    try {
+                      const { error } = await signIn(email, password);
+                      if (error) {
+                        toast({
+                          title: "Login Failed",
+                          description: error.message,
+                          variant: "destructive",
+                        });
+                      } else {
+                        toast({ title: "Welcome!", description: "You are now logged in." });
+                        navigate("/");
+                      }
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Logging In...
+                    </>
+                  ) : (
+                    "Login"
+                  )}
+                </Button>
+              </div>
+            )}
+
+
+
             <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-border" />
