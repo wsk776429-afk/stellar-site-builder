@@ -21,6 +21,8 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [justSignedUp, setJustSignedUp] = useState(false);
+
   
   const navigate = useNavigate();
   const { toast } = useToast();
