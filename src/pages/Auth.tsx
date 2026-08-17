@@ -311,7 +311,9 @@ const Auth = () => {
               onClick={() => {
                 setIsLogin(!isLogin);
                 setErrors({});
+                setJustSignedUp(false);
               }}
+
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
               disabled={isLoading}
             >
