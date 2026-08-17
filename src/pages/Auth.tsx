@@ -100,9 +100,11 @@ const Auth = () => {
         } else {
           toast({
             title: "Account Created!",
-            description: "Please check your email to verify your account.",
+            description: "Your account is ready. Tap Login to continue.",
           });
+          setJustSignedUp(true);
         }
+
       }
     } finally {
       setIsLoading(false);
