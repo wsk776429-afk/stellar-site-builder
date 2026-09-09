@@ -1,5 +1,7 @@
  import { motion, useScroll, useTransform } from "framer-motion";
- import { useRef } from "react";
+ import { useRef, useState } from "react";
+ import WarperOrbScene from "@/components/3d/WarperOrbScene";
+
  import WarperHeader from "@/components/WarperHeader";
  import WarperFooter from "@/components/WarperFooter";
  import HeroScene from "@/components/3d/HeroScene";
