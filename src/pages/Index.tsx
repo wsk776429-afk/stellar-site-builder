@@ -33,6 +33,8 @@ import SEO from "@/components/SEO";
  
  const Index = () => {
    const containerRef = useRef<HTMLDivElement>(null);
+   const [pokes, setPokes] = useState(0);
+
    const { scrollYProgress } = useScroll({
      target: containerRef,
      offset: ["start start", "end end"],
