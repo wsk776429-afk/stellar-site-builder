@@ -139,9 +139,13 @@ import SEO from "@/components/SEO";
           <BrandBackdrop />
 
           {/* Interactive 3D centerpiece */}
-          <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 z-0 opacity-90">
             <WarperOrbScene onPoke={() => setPokes((p) => p + 1)} />
           </div>
+
+          {/* Readability scrim over the orb */}
+          <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(ellipse_60%_45%_at_50%_45%,hsl(var(--background)/0.82),transparent_75%)]" />
+
 
           <div className="relative container mx-auto px-4 py-24 md:py-36 min-h-[88vh] flex items-center">
             <div className="max-w-5xl mx-auto text-center relative z-10 w-full pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
