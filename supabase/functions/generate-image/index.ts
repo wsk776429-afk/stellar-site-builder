@@ -50,51 +50,88 @@ serve(async (req) => {
 
     console.log('Generating image with prompt:', enhancedPrompt);
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-3.1-flash-image',
-        messages: [
-          { role: 'user', content: enhancedPrompt }
-        ],
-        modalities: ['image', 'text'],
-      }),
-    });
+    const extractImage = (data: any): string | undefined => {
+      const b64 = data?.data?.[0]?.b64_json;
+      if (b64) return `data:image/png;base64,${b64}`;
+      const url = data?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+      if (url) return url;
+      // Vertex generateContent shape
+      const parts = data?.candidates?.[0]?.content?.parts ?? [];
+      for (const p of parts) {
+        if (p?.inlineData?.data) {
+          return `data:${p.inlineData.mimeType ?? 'image/png'};base64,${p.inlineData.data}`;
+        }
+      }
+      return undefined;
+    };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Rate limit exceeded. Please try again in a few moments.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+    const callGateway = async (model: string, text: string) => {
+      const res = await fetch('https://ai.gateway.lovable.dev/v1/images/generations', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'user', content: text }],
+          modalities: ['image', 'text'],
+        }),
+      });
+      return res;
+    };
+
+    const attempts: Array<{ model: string; text: string }> = [
+      { model: 'google/gemini-3-pro-image', text: enhancedPrompt },
+      { model: 'google/gemini-3.1-flash-image', text: `Generate an image. ${enhancedPrompt}` },
+    ];
+
+    let imageData: string | undefined;
+    let lastStatus = 0;
+
+    for (const attempt of attempts) {
+      const response = await callGateway(attempt.model, attempt.text);
+      lastStatus = response.status;
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('AI gateway error:', response.status, errorText.substring(0, 500));
+        if (response.status === 429) {
+          return new Response(
+            JSON.stringify({ error: 'Rate limit exceeded. Please try again in a few moments.' }),
+            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        if (response.status === 402) {
+          return new Response(
+            JSON.stringify({ error: 'AI credits exhausted. Please add credits to continue.' }),
+            { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        if (response.status === 403 || response.status === 401) {
+          return new Response(
+            JSON.stringify({ error: 'Image generation is unavailable right now. Please try again later.' }),
+            { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        // 400/5xx: try the next model before giving up
+        continue;
       }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'AI credits exhausted. Please add credits to continue.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      throw new Error(`AI gateway error: ${response.status}`);
+
+      const data = await response.json();
+      imageData = extractImage(data);
+      if (imageData) break;
+      console.error('No image in response from', attempt.model, JSON.stringify(data).substring(0, 800));
     }
-
-    const data = await response.json();
-    console.log('AI response received');
-
-    const b64 = data?.data?.[0]?.b64_json;
-    const imageData = b64
-      ? `data:image/png;base64,${b64}`
-      : data?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
 
     if (!imageData) {
-      console.error('No image in response:', JSON.stringify(data).substring(0, 500));
-      throw new Error('No image was generated. Try a shorter, more visual prompt.');
+      throw new Error(
+        lastStatus >= 500
+          ? 'The image service is temporarily unavailable. Please try again.'
+          : 'No image was generated. Try a shorter, more visual prompt.'
+      );
     }
+
 
     return new Response(
       JSON.stringify({ imageUrl: imageData }),
