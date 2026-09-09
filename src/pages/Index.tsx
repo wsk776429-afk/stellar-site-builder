@@ -1,5 +1,7 @@
  import { motion, useScroll, useTransform } from "framer-motion";
- import { useRef } from "react";
+ import { useRef, useState } from "react";
+ import WarperOrbScene from "@/components/3d/WarperOrbScene";
+
  import WarperHeader from "@/components/WarperHeader";
  import WarperFooter from "@/components/WarperFooter";
  import HeroScene from "@/components/3d/HeroScene";
@@ -31,6 +33,8 @@ import SEO from "@/components/SEO";
  
  const Index = () => {
    const containerRef = useRef<HTMLDivElement>(null);
+   const [pokes, setPokes] = useState(0);
+
    const { scrollYProgress } = useScroll({
      target: containerRef,
      offset: ["start start", "end end"],
@@ -130,22 +134,32 @@ import SEO from "@/components/SEO";
          {/* Gradient overlays for depth */}
          <div className="fixed inset-0 pointer-events-none bg-gradient-to-b from-background/30 via-transparent to-background/80" />
 
-         {/* Hero Section — brand banner style */}
-         <section className="relative overflow-hidden border-b border-white/5">
-           <BrandBackdrop />
+        {/* Hero Section — interactive 3D orb */}
+        <section className="relative overflow-hidden border-b border-white/5">
+          <BrandBackdrop />
 
-           <div className="relative container mx-auto px-4 py-24 md:py-36 min-h-[88vh] flex items-center">
-             <div className="max-w-5xl mx-auto text-center relative z-10 w-full">
-               {/* Sparkle cluster */}
-               <motion.div
-                 initial={{ opacity: 0, scale: 0.6 }}
-                 animate={{ opacity: 1, scale: 1 }}
-                 transition={{ duration: 0.7 }}
-                 className="flex items-center justify-center gap-1 mb-6"
-               >
-                 <Sparkles className="w-10 h-10 text-primary drop-shadow-[0_0_25px_hsl(var(--primary)/0.9)]" />
-                 <Sparkles className="w-4 h-4 text-accent -mt-6" />
-               </motion.div>
+          {/* Interactive 3D centerpiece */}
+          <div className="absolute inset-0 z-0 opacity-90">
+            <WarperOrbScene onPoke={() => setPokes((p) => p + 1)} />
+          </div>
+
+          {/* Readability scrim over the orb */}
+          <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(ellipse_60%_45%_at_50%_45%,hsl(var(--background)/0.82),transparent_75%)]" />
+
+
+          <div className="relative container mx-auto px-4 py-24 md:py-36 min-h-[88vh] flex items-center">
+            <div className="max-w-5xl mx-auto text-center relative z-10 w-full pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
+              {/* Sparkle cluster */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.7 }}
+                className="flex items-center justify-center gap-1 mb-6"
+              >
+                <Sparkles className="w-10 h-10 text-primary drop-shadow-[0_0_25px_hsl(var(--primary)/0.9)]" />
+                <Sparkles className="w-4 h-4 text-accent -mt-6" />
+              </motion.div>
+
 
                {/* Logo + wordmark */}
                <motion.div
@@ -213,6 +227,21 @@ import SEO from "@/components/SEO";
                    </NeonButton>
                  </Link>
                </motion.div>
+
+               {/* Playful orb hint / poke counter */}
+               <motion.div
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 transition={{ duration: 0.8, delay: 0.9 }}
+                 className="mt-8 flex justify-center"
+               >
+                 <span className="px-4 py-2 rounded-full border border-white/10 bg-card/30 backdrop-blur-md text-xs md:text-sm text-muted-foreground">
+                   {pokes === 0
+                     ? "Move your mouse — then tap the glowing orb ✨"
+                     : `Orb poked ${pokes} time${pokes === 1 ? "" : "s"} — it likes you 💫`}
+                 </span>
+               </motion.div>
+
              </div>
            </div>
          </section>
