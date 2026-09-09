@@ -219,6 +219,21 @@ import SEO from "@/components/SEO";
                    </NeonButton>
                  </Link>
                </motion.div>
+
+               {/* Playful orb hint / poke counter */}
+               <motion.div
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 transition={{ duration: 0.8, delay: 0.9 }}
+                 className="mt-8 flex justify-center"
+               >
+                 <span className="px-4 py-2 rounded-full border border-white/10 bg-card/30 backdrop-blur-md text-xs md:text-sm text-muted-foreground">
+                   {pokes === 0
+                     ? "Move your mouse — then tap the glowing orb ✨"
+                     : `Orb poked ${pokes} time${pokes === 1 ? "" : "s"} — it likes you 💫`}
+                 </span>
+               </motion.div>
+
              </div>
            </div>
          </section>
