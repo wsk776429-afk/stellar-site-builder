@@ -130,22 +130,28 @@ import SEO from "@/components/SEO";
          {/* Gradient overlays for depth */}
          <div className="fixed inset-0 pointer-events-none bg-gradient-to-b from-background/30 via-transparent to-background/80" />
 
-         {/* Hero Section — brand banner style */}
-         <section className="relative overflow-hidden border-b border-white/5">
-           <BrandBackdrop />
+        {/* Hero Section — interactive 3D orb */}
+        <section className="relative overflow-hidden border-b border-white/5">
+          <BrandBackdrop />
 
-           <div className="relative container mx-auto px-4 py-24 md:py-36 min-h-[88vh] flex items-center">
-             <div className="max-w-5xl mx-auto text-center relative z-10 w-full">
-               {/* Sparkle cluster */}
-               <motion.div
-                 initial={{ opacity: 0, scale: 0.6 }}
-                 animate={{ opacity: 1, scale: 1 }}
-                 transition={{ duration: 0.7 }}
-                 className="flex items-center justify-center gap-1 mb-6"
-               >
-                 <Sparkles className="w-10 h-10 text-primary drop-shadow-[0_0_25px_hsl(var(--primary)/0.9)]" />
-                 <Sparkles className="w-4 h-4 text-accent -mt-6" />
-               </motion.div>
+          {/* Interactive 3D centerpiece */}
+          <div className="absolute inset-0 z-0">
+            <WarperOrbScene onPoke={() => setPokes((p) => p + 1)} />
+          </div>
+
+          <div className="relative container mx-auto px-4 py-24 md:py-36 min-h-[88vh] flex items-center">
+            <div className="max-w-5xl mx-auto text-center relative z-10 w-full pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
+              {/* Sparkle cluster */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.7 }}
+                className="flex items-center justify-center gap-1 mb-6"
+              >
+                <Sparkles className="w-10 h-10 text-primary drop-shadow-[0_0_25px_hsl(var(--primary)/0.9)]" />
+                <Sparkles className="w-4 h-4 text-accent -mt-6" />
+              </motion.div>
+
 
                {/* Logo + wordmark */}
                <motion.div
