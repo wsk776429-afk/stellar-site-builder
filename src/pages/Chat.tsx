@@ -407,6 +407,17 @@ const Chat = () => {
     }
   };
 
+  // Auto-send the handed-over search query once it is in the input
+  useEffect(() => {
+    if (!pendingQuery || isLoading) return;
+    if (input !== pendingQuery) return;
+    setPendingQuery(null);
+    handleSend();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingQuery, input, isLoading, user]);
+
+
+
   const handleAgentChange = (agent: typeof agents[0]) => {
     setSelectedAgent(agent);
     setCurrentConversationId(null);
