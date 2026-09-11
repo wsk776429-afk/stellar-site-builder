@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MessageSquare, Image, Volume2, FileText, Wand2, ArrowUpRight } from "lucide-react";
+import { MessageSquare, Image, Volume2, Wand2, ArrowUpRight } from "lucide-react";
 
 const cards = [
   {
@@ -85,7 +85,6 @@ const FloatingFeatureCards = () => (
         </motion.div>
       ))}
     </div>
-    <FileText className="hidden" aria-hidden="true" />
   </div>
 );
 
