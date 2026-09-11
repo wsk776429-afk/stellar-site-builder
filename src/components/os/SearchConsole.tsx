@@ -134,8 +134,8 @@ const SearchConsole = () => {
             </ul>
           </motion.div>
         )}
-      </motion.div>
       </AnimatePresence>
+
     </div>
   );
 };
