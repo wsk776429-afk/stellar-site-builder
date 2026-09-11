@@ -1,6 +1,9 @@
  import { motion, useScroll, useTransform } from "framer-motion";
  import { useRef, useState } from "react";
- import WarperOrbScene from "@/components/3d/WarperOrbScene";
+import WarperOrbScene from "@/components/3d/WarperOrbScene";
+import SearchConsole from "@/components/os/SearchConsole";
+import FloatingFeatureCards from "@/components/os/FloatingFeatureCards";
+
 
  import WarperHeader from "@/components/WarperHeader";
  import WarperFooter from "@/components/WarperFooter";
@@ -134,7 +137,7 @@ import SEO from "@/components/SEO";
          {/* Gradient overlays for depth */}
          <div className="fixed inset-0 pointer-events-none bg-gradient-to-b from-background/30 via-transparent to-background/80" />
 
-        {/* Hero Section — interactive 3D orb */}
+        {/* OS Core — 3D orb + search console + floating feature cards */}
         <section className="relative overflow-hidden border-b border-white/5">
           <BrandBackdrop />
 
@@ -144,107 +147,79 @@ import SEO from "@/components/SEO";
           </div>
 
           {/* Readability scrim over the orb */}
-          <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(ellipse_60%_45%_at_50%_45%,hsl(var(--background)/0.82),transparent_75%)]" />
+          <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(ellipse_60%_45%_at_50%_45%,hsl(var(--background)/0.86),transparent_78%)]" />
 
+          <div className="relative container mx-auto px-4 py-20 md:py-28 min-h-[92vh] flex items-center">
+            <div className="relative w-full max-w-6xl mx-auto">
+              <FloatingFeatureCards />
 
-          <div className="relative container mx-auto px-4 py-24 md:py-36 min-h-[88vh] flex items-center">
-            <div className="max-w-5xl mx-auto text-center relative z-10 w-full pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
-              {/* Sparkle cluster */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.7 }}
-                className="flex items-center justify-center gap-1 mb-6"
-              >
-                <Sparkles className="w-10 h-10 text-primary drop-shadow-[0_0_25px_hsl(var(--primary)/0.9)]" />
-                <Sparkles className="w-4 h-4 text-accent -mt-6" />
-              </motion.div>
+              <div className="relative z-10 text-center pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_input]:pointer-events-auto [&_form]:pointer-events-auto">
+                {/* Logo + wordmark */}
+                <motion.div
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="flex items-center justify-center gap-3 md:gap-5"
+                >
+                  <WarperLogo className="w-12 h-12 md:w-20 md:h-20 drop-shadow-[0_0_35px_hsl(var(--secondary)/0.6)]" />
+                  <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
+                    Warper AI
+                  </h1>
+                </motion.div>
 
+                {/* Tagline */}
+                <motion.p
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.12 }}
+                  className="mt-3 text-base md:text-xl text-muted-foreground"
+                >
+                  The AI search engine that answers, creates and edits — in one place.
+                </motion.p>
 
-               {/* Logo + wordmark */}
-               <motion.div
-                 initial={{ opacity: 0, y: 24 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ duration: 0.8, delay: 0.1 }}
-                 className="flex items-center justify-center gap-4 md:gap-6"
-               >
-                 <WarperLogo className="w-16 h-16 md:w-28 md:h-28 drop-shadow-[0_0_35px_hsl(var(--secondary)/0.6)]" />
-                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground">
-                   Warper AI
-                 </h1>
-               </motion.div>
+                {/* Search console */}
+                <div className="mt-8 md:mt-10">
+                  <SearchConsole />
+                </div>
 
-               {/* Tagline */}
-               <motion.p
-                 initial={{ opacity: 0, y: 16 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ duration: 0.8, delay: 0.3 }}
-                 className="mt-4 text-2xl md:text-4xl font-semibold tracking-tight text-foreground/90"
-               >
-                 Smart AI Tools
-               </motion.p>
+                {/* Secondary actions */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                  className="mt-9 flex flex-col sm:flex-row gap-4 justify-center"
+                >
+                  <Link to="/chat">
+                    <NeonButton variant="primary" size="lg">
+                      Get Started Free
+                      <ArrowRight className="w-5 h-5" />
+                    </NeonButton>
+                  </Link>
+                  <Link to="/image">
+                    <NeonButton variant="secondary" size="lg">
+                      Explore Features
+                    </NeonButton>
+                  </Link>
+                </motion.div>
 
-               {/* Feature pill row */}
-               <motion.div
-                 initial={{ opacity: 0, y: 16 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ duration: 0.8, delay: 0.45 }}
-                 className="mt-7 flex flex-wrap items-center justify-center gap-x-3 gap-y-3 text-sm md:text-base"
-               >
-                 {heroPills.map((pill, index) => (
-                   <div key={pill.label} className="flex items-center gap-3">
-                     <Link
-                       to={pill.to}
-                       className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10
-                                  bg-card/40 backdrop-blur-md text-foreground/90
-                                  hover:border-primary/50 hover:text-foreground transition-colors"
-                     >
-                       <pill.icon className="w-4 h-4 text-accent" />
-                       <span className="font-medium">{pill.label}</span>
-                     </Link>
-                     {index < heroPills.length - 1 && (
-                       <span className="hidden md:inline text-primary/60">•</span>
-                     )}
-                   </div>
-                 ))}
-               </motion.div>
+                {/* Playful orb hint / poke counter */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.9 }}
+                  className="mt-8 flex justify-center"
+                >
+                  <span className="px-4 py-2 rounded-full border border-white/10 bg-card/30 backdrop-blur-md text-xs md:text-sm text-muted-foreground">
+                    {pokes === 0
+                      ? "Move your mouse — then tap the glowing orb ✨"
+                      : `Orb poked ${pokes} time${pokes === 1 ? "" : "s"} — it likes you 💫`}
+                  </span>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-               <motion.div 
-                 initial={{ opacity: 0, y: 20 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ duration: 0.8, delay: 0.6 }}
-                 className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
-               >
-                 <Link to="/chat">
-                   <NeonButton variant="primary" size="lg">
-                     Get Started Free
-                     <ArrowRight className="w-5 h-5" />
-                   </NeonButton>
-                 </Link>
-                 <Link to="/image">
-                   <NeonButton variant="secondary" size="lg">
-                     Explore Features
-                   </NeonButton>
-                 </Link>
-               </motion.div>
-
-               {/* Playful orb hint / poke counter */}
-               <motion.div
-                 initial={{ opacity: 0 }}
-                 animate={{ opacity: 1 }}
-                 transition={{ duration: 0.8, delay: 0.9 }}
-                 className="mt-8 flex justify-center"
-               >
-                 <span className="px-4 py-2 rounded-full border border-white/10 bg-card/30 backdrop-blur-md text-xs md:text-sm text-muted-foreground">
-                   {pokes === 0
-                     ? "Move your mouse — then tap the glowing orb ✨"
-                     : `Orb poked ${pokes} time${pokes === 1 ? "" : "s"} — it likes you 💫`}
-                 </span>
-               </motion.div>
-
-             </div>
-           </div>
-         </section>
 
  
          {/* Feature Cards - Floating in 3D space */}
